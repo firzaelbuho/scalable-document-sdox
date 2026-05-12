@@ -1,0 +1,811 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sdox.dev/ast-spec.json",
+  "title": "SDOX AST Specification",
+  "description": "JSON Schema defining the Abstract Syntax Tree for Scalable Document (SDOX) v0.1.0. All conforming parsers MUST produce output that validates against this schema.",
+  "version": "0.1.0",
+
+  "type": "object",
+  "$ref": "#/definitions/DocumentNode",
+
+  "definitions": {
+
+    "Position": {
+      "type": "object",
+      "description": "Source location of a node in the original .sdox file.",
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "$ref": "#/definitions/Point" },
+        "end": { "$ref": "#/definitions/Point" }
+      },
+      "additionalProperties": false
+    },
+
+    "Point": {
+      "type": "object",
+      "description": "A specific position in the source file.",
+      "required": ["line", "column"],
+      "properties": {
+        "line": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-indexed line number."
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-indexed column number."
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "0-indexed character offset from the beginning of the file."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "AttributeValue": {
+      "description": "Attribute values can be strings, numbers, or booleans.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" }
+      ]
+    },
+
+    "BaseNode": {
+      "type": "object",
+      "description": "Base properties shared by all AST nodes.",
+      "required": ["type", "position"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The node type identifier."
+        },
+        "attributes": {
+          "type": "object",
+          "description": "Key-value attribute pairs from the tag. Keys are always strings.",
+          "additionalProperties": { "$ref": "#/definitions/AttributeValue" },
+          "default": {}
+        },
+        "content": {
+          "type": ["string", "null"],
+          "description": "Text content for inline and leaf nodes. null for block-only container nodes.",
+          "default": null
+        },
+        "children": {
+          "type": "array",
+          "description": "Child AST nodes for block/container nodes. Empty array for leaf nodes.",
+          "items": { "$ref": "#/definitions/AnyNode" },
+          "default": []
+        },
+        "position": {
+          "$ref": "#/definitions/Position"
+        }
+      }
+    },
+
+    "AnyNode": {
+      "description": "Any valid SDOX AST node.",
+      "oneOf": [
+        { "$ref": "#/definitions/DocumentNode" },
+        { "$ref": "#/definitions/TitleNode" },
+        { "$ref": "#/definitions/ParagraphNode" },
+        { "$ref": "#/definitions/SectionNode" },
+        { "$ref": "#/definitions/DividerNode" },
+        { "$ref": "#/definitions/TextNode" },
+        { "$ref": "#/definitions/QuoteNode" },
+        { "$ref": "#/definitions/NoteNode" },
+        { "$ref": "#/definitions/PlainTextNode" },
+        { "$ref": "#/definitions/ListNode" },
+        { "$ref": "#/definitions/ItemNode" },
+        { "$ref": "#/definitions/UrlNode" },
+        { "$ref": "#/definitions/ImageNode" },
+        { "$ref": "#/definitions/CodeNode" },
+        { "$ref": "#/definitions/OutputNode" },
+        { "$ref": "#/definitions/TableNode" },
+        { "$ref": "#/definitions/RowNode" },
+        { "$ref": "#/definitions/CellNode" },
+        { "$ref": "#/definitions/CardNode" },
+        { "$ref": "#/definitions/TabNode" },
+        { "$ref": "#/definitions/AccordionNode" },
+        { "$ref": "#/definitions/IncludeNode" },
+        { "$ref": "#/definitions/TemplateNode" },
+        { "$ref": "#/definitions/UseNode" },
+        { "$ref": "#/definitions/MetadataNode" },
+        { "$ref": "#/definitions/DatasetNode" },
+        { "$ref": "#/definitions/ExampleNode" },
+        { "$ref": "#/definitions/InstructionNode" },
+        { "$ref": "#/definitions/ResponseNode" },
+        { "$ref": "#/definitions/EmbeddingNode" },
+        { "$ref": "#/definitions/ChunkNode" },
+        { "$ref": "#/definitions/ContextNode" },
+        { "$ref": "#/definitions/CompletionNode" }
+      ]
+    },
+
+    "DocumentNode": {
+      "description": "Root node of every SDOX AST. Always the top-level node.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "document" },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional document-level metadata extracted during parsing.",
+          "properties": {
+            "sdox_version": { "type": "string" },
+            "source_file": { "type": "string" },
+            "parse_time_ms": { "type": "number" }
+          },
+          "additionalProperties": { "$ref": "#/definitions/AttributeValue" }
+        }
+      }
+    },
+
+    "TitleNode": {
+      "description": "Heading element. Inline form only (no children).",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "title" },
+        "attributes": {
+          "type": "object",
+          "required": ["level"],
+          "properties": {
+            "level": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6,
+              "description": "Heading level."
+            },
+            "id": {
+              "type": "string",
+              "description": "Anchor ID for deep linking."
+            }
+          }
+        },
+        "content": {
+          "type": "string",
+          "description": "Heading text."
+        },
+        "children": {
+          "const": []
+        }
+      }
+    },
+
+    "ParagraphNode": {
+      "description": "Block of body text. May contain inline children (text, url, etc.).",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "paragraph" },
+        "content": {
+          "type": ["string", "null"],
+          "description": "Plain text content, or null if using inline children."
+        },
+        "children": {
+          "type": "array",
+          "description": "Inline child nodes (text, url) for rich paragraphs.",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "SectionNode": {
+      "description": "Groups related content under a named section.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "section" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "id": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "DividerNode": {
+      "description": "Horizontal rule. Leaf node with no content or children.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "divider" },
+        "attributes": { "const": {} },
+        "content": { "const": null },
+        "children": { "const": [] }
+      }
+    },
+
+    "TextNode": {
+      "description": "Inline text with semantic styling.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "text" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "enum": ["bold", "italic", "strikethrough", "underline"]
+            },
+            "color": { "type": "string" },
+            "size": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": "string",
+          "description": "The styled text content."
+        },
+        "children": { "const": [] }
+      }
+    },
+
+    "PlainTextNode": {
+      "description": "Untagged plain text content. Generated by the parser for text that appears outside any tag within a block.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "plain_text" },
+        "attributes": { "const": {} },
+        "content": {
+          "type": "string",
+          "description": "Raw text content."
+        },
+        "children": { "const": [] }
+      }
+    },
+
+    "QuoteNode": {
+      "description": "Blockquote with optional attribution.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "quote" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "author": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": ["string", "null"],
+          "description": "Quote text, or null if using children."
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "NoteNode": {
+      "description": "Callout box with semantic severity.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "note" },
+        "attributes": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["info", "warning", "danger", "success"],
+              "description": "Severity level."
+            }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "ListNode": {
+      "description": "List container. Children must be ItemNode.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "list" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["unordered", "ordered", "checklist"],
+              "default": "unordered"
+            }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ItemNode" }
+        }
+      }
+    },
+
+    "ItemNode": {
+      "description": "Single list item.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "item" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "done": {
+              "type": "boolean",
+              "default": false,
+              "description": "Completion state for checklists."
+            },
+            "key": {
+              "type": "string",
+              "description": "Key for metadata items."
+            }
+          }
+        },
+        "content": {
+          "type": ["string", "null"],
+          "description": "Item text content."
+        },
+        "children": {
+          "type": "array",
+          "description": "Nested content (for complex list items).",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "UrlNode": {
+      "description": "Hyperlink. Leaf node.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "url" },
+        "attributes": {
+          "type": "object",
+          "required": ["href"],
+          "properties": {
+            "href": { "type": "string" },
+            "title": { "type": "string" },
+            "target": {
+              "type": "string",
+              "enum": ["_self", "_blank"]
+            }
+          }
+        },
+        "content": {
+          "type": ["string", "null"],
+          "description": "Link display text."
+        },
+        "children": { "const": [] }
+      }
+    },
+
+    "ImageNode": {
+      "description": "Image element. Leaf node.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "image" },
+        "attributes": {
+          "type": "object",
+          "required": ["src", "alt"],
+          "properties": {
+            "src": { "type": "string" },
+            "alt": { "type": "string" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          }
+        },
+        "content": { "const": null },
+        "children": { "const": [] }
+      }
+    },
+
+    "CodeNode": {
+      "description": "Fenced code block. Content is preserved exactly as-is (no parsing).",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "code" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "language": { "type": "string" },
+            "title": { "type": "string" },
+            "line_number": { "type": "boolean", "default": false },
+            "highlight": { "type": "string" },
+            "foldable": { "type": "boolean", "default": false },
+            "editable": { "type": "boolean", "default": false },
+            "runnable": { "type": "boolean", "default": false },
+            "theme": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": "string",
+          "description": "Raw code content. Whitespace and indentation preserved exactly."
+        },
+        "children": { "const": [] }
+      }
+    },
+
+    "OutputNode": {
+      "description": "Command or API output display.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "output" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["terminal", "json", "text", "html"]
+            }
+          }
+        },
+        "content": {
+          "type": "string",
+          "description": "Output text. Preserved exactly."
+        },
+        "children": { "const": [] }
+      }
+    },
+
+    "TableNode": {
+      "description": "Data table. Children must be RowNode.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "table" },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/RowNode" }
+        }
+      }
+    },
+
+    "RowNode": {
+      "description": "Table row. Children must be CellNode.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "row" },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/CellNode" }
+        }
+      }
+    },
+
+    "CellNode": {
+      "description": "Table cell.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "cell" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "header": { "type": "boolean", "default": false }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "CardNode": {
+      "description": "Contained content card.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "card" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "type": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "TabNode": {
+      "description": "Tab panel.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "tab" },
+        "attributes": {
+          "type": "object",
+          "required": ["title"],
+          "properties": {
+            "title": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "AccordionNode": {
+      "description": "Collapsible section.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "accordion" },
+        "attributes": {
+          "type": "object",
+          "required": ["title"],
+          "properties": {
+            "title": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "IncludeNode": {
+      "description": "File inclusion directive. Leaf node — resolved at parse or render time.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "include" },
+        "attributes": {
+          "type": "object",
+          "required": ["src"],
+          "properties": {
+            "src": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "description": "Empty before resolution. After resolution, contains the included document's children.",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "TemplateNode": {
+      "description": "Reusable template definition.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "template" },
+        "attributes": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "UseNode": {
+      "description": "Template instantiation. Leaf node — resolved at render time.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "use" },
+        "attributes": {
+          "type": "object",
+          "required": ["template"],
+          "properties": {
+            "template": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "description": "Empty before resolution. After resolution, contains the template's expanded children.",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "MetadataNode": {
+      "description": "Document-level metadata container. Children should be ItemNode with key attributes.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "metadata" },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ItemNode" }
+        }
+      }
+    },
+
+    "DatasetNode": {
+      "description": "Named dataset block for AI training/evaluation.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "dataset" },
+        "attributes": {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "ExampleNode": {
+      "description": "Code/content example for AI few-shot learning.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "example" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "language": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "InstructionNode": {
+      "description": "AI prompt instruction.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "instruction" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "priority": {
+              "type": "string",
+              "enum": ["low", "medium", "high"]
+            }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "ResponseNode": {
+      "description": "Expected or generated AI response.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "response" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "model": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "EmbeddingNode": {
+      "description": "Marks content for vector embedding generation. Leaf node.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "embedding" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "model": { "type": "string" }
+          }
+        },
+        "content": { "const": null },
+        "children": { "const": [] }
+      }
+    },
+
+    "ChunkNode": {
+      "description": "Content chunk for vector DB ingestion.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "chunk" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "size": { "type": "number" }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "ContextNode": {
+      "description": "Scoped context for AI processing.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "context" },
+        "attributes": {
+          "type": "object",
+          "required": ["scope"],
+          "properties": {
+            "scope": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    },
+
+    "CompletionNode": {
+      "description": "Section for AI auto-completion.",
+      "allOf": [{ "$ref": "#/definitions/BaseNode" }],
+      "properties": {
+        "type": { "const": "completion" },
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "model": { "type": "string" }
+          }
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AnyNode" }
+        }
+      }
+    }
+  }
+}

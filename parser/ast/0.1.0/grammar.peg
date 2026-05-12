@@ -1,0 +1,165 @@
+// ============================================
+// SDOX PEG Grammar — v0.1.0 (Draft)
+// ============================================
+//
+// Parsing Expression Grammar for Scalable Document.
+// This grammar is the source of truth for all SDOX parsers.
+//
+// Notation:
+//   /  = ordered choice
+//   *  = zero or more
+//   +  = one or more
+//   ?  = optional
+//   !  = not predicate
+//   &  = and predicate
+//   .  = any character
+//   "" = literal string
+//   [] = character class
+//   <- = rule definition
+//
+// ============================================
+
+// ────────────────────────────────────────────
+// 1. DOCUMENT (root)
+// ────────────────────────────────────────────
+
+Document        <- Spacing (Element / BlankLine)* EOF
+
+Element         <- Tag / PlainText
+
+BlankLine       <- Spacing Newline
+
+
+// ────────────────────────────────────────────
+// 2. TAG SYNTAX
+// ────────────────────────────────────────────
+
+Tag             <- "#" TagName Attributes? Spacing (BlockBody / InlineBody)?
+
+TagName         <- [a-z] [a-z0-9_]*
+
+// Block form: #tag(attrs) { ... }
+BlockBody       <- "{" BlockContent "}"
+
+BlockContent    <- (Element / RawText / BlankLine)*
+
+// Inline form: #tag(attrs) content\n
+InlineBody      <- InlineContent Newline
+
+InlineContent   <- (!Newline .)+
+
+
+// ────────────────────────────────────────────
+// 3. ATTRIBUTES
+// ────────────────────────────────────────────
+
+Attributes      <- "(" Spacing AttributeList Spacing ")"
+
+AttributeList   <- Attribute (Spacing "," Spacing Attribute)*
+
+Attribute       <- AttributeName Spacing "=" Spacing AttributeValue
+
+AttributeName   <- [a-z] [a-z0-9_]*
+
+AttributeValue  <- StringValue / NumberValue / BooleanValue
+
+StringValue     <- '"' StringChar* '"'
+
+StringChar      <- EscapedChar / (!'"' !"\\" .)
+
+EscapedChar     <- "\\" ["\\/bfnrt]
+
+NumberValue     <- "-"? [0-9]+ ("." [0-9]+)?
+
+BooleanValue    <- "true" / "false"
+
+
+// ────────────────────────────────────────────
+// 4. CONTENT RULES
+// ────────────────────────────────────────────
+
+// Raw text inside a block that is NOT a tag
+// (used for code blocks, output, etc.)
+RawText         <- (!("#" [a-z]) !"}" !Newline .)+ Newline?
+
+// Plain text not inside any tag (top-level loose text)
+PlainText       <- (!("#" [a-z]) !Newline .)+ Newline
+
+
+// ────────────────────────────────────────────
+// 5. CODE BLOCK SPECIAL RULE
+// ────────────────────────────────────────────
+
+// Code and output blocks use raw content mode:
+// The parser MUST NOT interpret #tags inside code/output blocks.
+// Content between { } is captured verbatim.
+//
+// Implementation note:
+// When the parser encounters #code or #output,
+// it should switch to raw content mode for the block body.
+// This means:
+//   - No tag parsing inside the block
+//   - Preserve all whitespace exactly
+//   - Only match the closing } at the correct nesting level
+//   - Handle escaped braces: \{ and \}
+
+CodeBlockBody   <- "{" RawBlockContent "}"
+
+RawBlockContent <- (EscapedBrace / NestedBrace / RawChar)*
+
+EscapedBrace    <- "\\" [{}]
+
+NestedBrace     <- "{" RawBlockContent "}"
+
+RawChar         <- !"}" .
+
+
+// ────────────────────────────────────────────
+// 6. WHITESPACE & TERMINALS
+// ────────────────────────────────────────────
+
+Spacing         <- [ \t]*
+
+Newline         <- "\r\n" / "\n" / "\r"
+
+EOF             <- !.
+
+
+// ============================================
+// PARSING RULES & CONVENTIONS
+// ============================================
+//
+// 1. TAG RESOLUTION ORDER:
+//    Tags are parsed left-to-right, top-to-bottom.
+//    Block bodies are parsed recursively.
+//
+// 2. CONTENT STRIPPING:
+//    Block content leading/trailing whitespace per line
+//    should be stripped (except inside code/output blocks).
+//    The parser should normalize indentation based on
+//    the minimum indentation of non-empty lines.
+//
+// 3. RAW CONTENT TAGS:
+//    The following tags use raw content mode (no nested tag parsing):
+//    - code
+//    - output
+//    - example (when language attribute is present)
+//
+// 4. NESTING:
+//    Tags can be nested inside block bodies.
+//    Inline tags cannot contain other tags.
+//
+// 5. ATTRIBUTE NAMING:
+//    - Attribute names are always lowercase
+//    - Snake case: line_number, not lineNumber
+//    - No shorthand: language, not lang
+//
+// 6. UNKNOWN TAGS:
+//    Parsers SHOULD preserve unknown tags as generic nodes
+//    with type set to the tag name. This enables extensibility.
+//
+// 7. ERROR RECOVERY:
+//    Parsers SHOULD attempt to recover from syntax errors
+//    by treating malformed tags as plain text.
+//
+// ============================================

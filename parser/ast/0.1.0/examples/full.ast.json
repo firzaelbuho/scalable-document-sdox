@@ -1,0 +1,580 @@
+{
+  "type": "document",
+  "attributes": {},
+  "content": null,
+  "children": [
+    {
+      "type": "metadata",
+      "attributes": {},
+      "content": null,
+      "children": [
+        {
+          "type": "item",
+          "attributes": { "key": "author" },
+          "content": "SDOX Team",
+          "children": [],
+          "position": { "start": { "line": 2, "column": 3 }, "end": { "line": 2, "column": 31 } }
+        },
+        {
+          "type": "item",
+          "attributes": { "key": "version" },
+          "content": "0.1.0",
+          "children": [],
+          "position": { "start": { "line": 3, "column": 3 }, "end": { "line": 3, "column": 27 } }
+        },
+        {
+          "type": "item",
+          "attributes": { "key": "status" },
+          "content": "draft",
+          "children": [],
+          "position": { "start": { "line": 4, "column": 3 }, "end": { "line": 4, "column": 26 } }
+        }
+      ],
+      "position": { "start": { "line": 1, "column": 1 }, "end": { "line": 5, "column": 2 } }
+    },
+
+    {
+      "type": "title",
+      "attributes": { "level": 1 },
+      "content": "SDOX Full Example",
+      "children": [],
+      "position": { "start": { "line": 7, "column": 1 }, "end": { "line": 7, "column": 37 } }
+    },
+
+    {
+      "type": "paragraph",
+      "attributes": {},
+      "content": "This document demonstrates every tag category\nin the Scalable Document specification.",
+      "children": [],
+      "position": { "start": { "line": 9, "column": 1 }, "end": { "line": 12, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 14, "column": 1 }, "end": { "line": 14, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Text & Semantics", "id": "text" },
+      "content": null,
+      "children": [
+        {
+          "type": "paragraph",
+          "attributes": {},
+          "content": null,
+          "children": [
+            {
+              "type": "plain_text",
+              "attributes": {},
+              "content": "You can use ",
+              "children": [],
+              "position": { "start": { "line": 18, "column": 3 }, "end": { "line": 18, "column": 15 } }
+            },
+            {
+              "type": "text",
+              "attributes": { "style": "bold" },
+              "content": "bold text",
+              "children": [],
+              "position": { "start": { "line": 18, "column": 15 }, "end": { "line": 18, "column": 42 } }
+            },
+            {
+              "type": "plain_text",
+              "attributes": {},
+              "content": " and\n",
+              "children": [],
+              "position": { "start": { "line": 18, "column": 42 }, "end": { "line": 18, "column": 47 } }
+            },
+            {
+              "type": "text",
+              "attributes": { "style": "italic" },
+              "content": "italic text",
+              "children": [],
+              "position": { "start": { "line": 19, "column": 3 }, "end": { "line": 19, "column": 34 } }
+            },
+            {
+              "type": "plain_text",
+              "attributes": {},
+              "content": " inline.",
+              "children": [],
+              "position": { "start": { "line": 19, "column": 34 }, "end": { "line": 19, "column": 42 } }
+            }
+          ],
+          "position": { "start": { "line": 17, "column": 3 }, "end": { "line": 20, "column": 4 } }
+        },
+        {
+          "type": "quote",
+          "attributes": { "author": "Alan Turing" },
+          "content": "We can only see a short distance ahead,\nbut we can see plenty there that needs to be done.",
+          "children": [],
+          "position": { "start": { "line": 22, "column": 3 }, "end": { "line": 25, "column": 4 } }
+        },
+        {
+          "type": "note",
+          "attributes": { "type": "warning" },
+          "content": "Never expose API keys in client-side code.",
+          "children": [],
+          "position": { "start": { "line": 27, "column": 3 }, "end": { "line": 29, "column": 4 } }
+        },
+        {
+          "type": "note",
+          "attributes": { "type": "success" },
+          "content": "All tests passed successfully.",
+          "children": [],
+          "position": { "start": { "line": 31, "column": 3 }, "end": { "line": 33, "column": 4 } }
+        }
+      ],
+      "position": { "start": { "line": 16, "column": 1 }, "end": { "line": 34, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 36, "column": 1 }, "end": { "line": 36, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Lists", "id": "lists" },
+      "content": null,
+      "children": [
+        {
+          "type": "list",
+          "attributes": { "type": "ordered" },
+          "content": null,
+          "children": [
+            {
+              "type": "item",
+              "attributes": {},
+              "content": "First step",
+              "children": [],
+              "position": { "start": { "line": 40, "column": 5 }, "end": { "line": 40, "column": 21 } }
+            },
+            {
+              "type": "item",
+              "attributes": {},
+              "content": "Second step",
+              "children": [],
+              "position": { "start": { "line": 41, "column": 5 }, "end": { "line": 41, "column": 22 } }
+            },
+            {
+              "type": "item",
+              "attributes": {},
+              "content": "Third step",
+              "children": [],
+              "position": { "start": { "line": 42, "column": 5 }, "end": { "line": 42, "column": 21 } }
+            }
+          ],
+          "position": { "start": { "line": 39, "column": 3 }, "end": { "line": 43, "column": 4 } }
+        },
+        {
+          "type": "list",
+          "attributes": { "type": "checklist" },
+          "content": null,
+          "children": [
+            {
+              "type": "item",
+              "attributes": { "done": true },
+              "content": "Setup project",
+              "children": [],
+              "position": { "start": { "line": 46, "column": 5 }, "end": { "line": 46, "column": 30 } }
+            },
+            {
+              "type": "item",
+              "attributes": { "done": true },
+              "content": "Write specification",
+              "children": [],
+              "position": { "start": { "line": 47, "column": 5 }, "end": { "line": 47, "column": 36 } }
+            },
+            {
+              "type": "item",
+              "attributes": { "done": false },
+              "content": "Build parser",
+              "children": [],
+              "position": { "start": { "line": 48, "column": 5 }, "end": { "line": 48, "column": 31 } }
+            },
+            {
+              "type": "item",
+              "attributes": { "done": false },
+              "content": "Build renderer",
+              "children": [],
+              "position": { "start": { "line": 49, "column": 5 }, "end": { "line": 49, "column": 33 } }
+            }
+          ],
+          "position": { "start": { "line": 45, "column": 3 }, "end": { "line": 50, "column": 4 } }
+        }
+      ],
+      "position": { "start": { "line": 38, "column": 1 }, "end": { "line": 51, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 53, "column": 1 }, "end": { "line": 53, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Code", "id": "code" },
+      "content": null,
+      "children": [
+        {
+          "type": "code",
+          "attributes": { "language": "python", "title": "main.py", "line_number": true },
+          "content": "def greet(name):\n    return f\"Hello, {name}!\"\n\nif __name__ == \"__main__\":\n    print(greet(\"SDOX\"))",
+          "children": [],
+          "position": { "start": { "line": 56, "column": 3 }, "end": { "line": 62, "column": 4 } }
+        },
+        {
+          "type": "output",
+          "attributes": { "type": "terminal" },
+          "content": "Hello, SDOX!",
+          "children": [],
+          "position": { "start": { "line": 64, "column": 3 }, "end": { "line": 66, "column": 4 } }
+        }
+      ],
+      "position": { "start": { "line": 55, "column": 1 }, "end": { "line": 67, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 69, "column": 1 }, "end": { "line": 69, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Links & Media", "id": "links" },
+      "content": null,
+      "children": [
+        {
+          "type": "url",
+          "attributes": { "href": "https://github.com/firzaelbuho/scalable-document-sdox" },
+          "content": "SDOX GitHub",
+          "children": [],
+          "position": { "start": { "line": 72, "column": 3 }, "end": { "line": 72, "column": 74 } }
+        },
+        {
+          "type": "image",
+          "attributes": { "src": "logo.png", "alt": "SDOX Logo", "width": 200 },
+          "content": null,
+          "children": [],
+          "position": { "start": { "line": 73, "column": 3 }, "end": { "line": 73, "column": 50 } }
+        }
+      ],
+      "position": { "start": { "line": 71, "column": 1 }, "end": { "line": 74, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 76, "column": 1 }, "end": { "line": 76, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Tables", "id": "tables" },
+      "content": null,
+      "children": [
+        {
+          "type": "table",
+          "attributes": {},
+          "content": null,
+          "children": [
+            {
+              "type": "row",
+              "attributes": {},
+              "content": null,
+              "children": [
+                {
+                  "type": "cell",
+                  "attributes": { "header": true },
+                  "content": "Feature",
+                  "children": [],
+                  "position": { "start": { "line": 80, "column": 7 }, "end": { "line": 80, "column": 32 } }
+                },
+                {
+                  "type": "cell",
+                  "attributes": { "header": true },
+                  "content": "Status",
+                  "children": [],
+                  "position": { "start": { "line": 81, "column": 7 }, "end": { "line": 81, "column": 31 } }
+                }
+              ],
+              "position": { "start": { "line": 79, "column": 5 }, "end": { "line": 82, "column": 6 } }
+            },
+            {
+              "type": "row",
+              "attributes": {},
+              "content": null,
+              "children": [
+                {
+                  "type": "cell",
+                  "attributes": {},
+                  "content": "Parser",
+                  "children": [],
+                  "position": { "start": { "line": 84, "column": 7 }, "end": { "line": 84, "column": 19 } }
+                },
+                {
+                  "type": "cell",
+                  "attributes": {},
+                  "content": "In Progress",
+                  "children": [],
+                  "position": { "start": { "line": 85, "column": 7 }, "end": { "line": 85, "column": 24 } }
+                }
+              ],
+              "position": { "start": { "line": 83, "column": 5 }, "end": { "line": 86, "column": 6 } }
+            },
+            {
+              "type": "row",
+              "attributes": {},
+              "content": null,
+              "children": [
+                {
+                  "type": "cell",
+                  "attributes": {},
+                  "content": "Renderer",
+                  "children": [],
+                  "position": { "start": { "line": 88, "column": 7 }, "end": { "line": 88, "column": 21 } }
+                },
+                {
+                  "type": "cell",
+                  "attributes": {},
+                  "content": "Planned",
+                  "children": [],
+                  "position": { "start": { "line": 89, "column": 7 }, "end": { "line": 89, "column": 20 } }
+                }
+              ],
+              "position": { "start": { "line": 87, "column": 5 }, "end": { "line": 90, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 78, "column": 3 }, "end": { "line": 91, "column": 4 } }
+        }
+      ],
+      "position": { "start": { "line": 77, "column": 1 }, "end": { "line": 92, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 94, "column": 1 }, "end": { "line": 94, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Components", "id": "components" },
+      "content": null,
+      "children": [
+        {
+          "type": "card",
+          "attributes": { "title": "Quick Tip" },
+          "content": null,
+          "children": [
+            {
+              "type": "paragraph",
+              "attributes": {},
+              "content": "Use semantic tags to describe meaning,\nnot visual appearance.",
+              "children": [],
+              "position": { "start": { "line": 98, "column": 5 }, "end": { "line": 101, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 97, "column": 3 }, "end": { "line": 102, "column": 4 } }
+        },
+        {
+          "type": "tab",
+          "attributes": { "title": "macOS" },
+          "content": null,
+          "children": [
+            {
+              "type": "code",
+              "attributes": { "language": "bash" },
+              "content": "brew install sdox",
+              "children": [],
+              "position": { "start": { "line": 105, "column": 5 }, "end": { "line": 107, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 104, "column": 3 }, "end": { "line": 108, "column": 4 } }
+        },
+        {
+          "type": "tab",
+          "attributes": { "title": "Linux" },
+          "content": null,
+          "children": [
+            {
+              "type": "code",
+              "attributes": { "language": "bash" },
+              "content": "sudo apt install sdox",
+              "children": [],
+              "position": { "start": { "line": 111, "column": 5 }, "end": { "line": 113, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 110, "column": 3 }, "end": { "line": 114, "column": 4 } }
+        },
+        {
+          "type": "accordion",
+          "attributes": { "title": "Advanced Options" },
+          "content": null,
+          "children": [
+            {
+              "type": "paragraph",
+              "attributes": {},
+              "content": "Configure parser behavior in sdox.config.json",
+              "children": [],
+              "position": { "start": { "line": 117, "column": 5 }, "end": { "line": 119, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 116, "column": 3 }, "end": { "line": 120, "column": 4 } }
+        }
+      ],
+      "position": { "start": { "line": 96, "column": 1 }, "end": { "line": 121, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 123, "column": 1 }, "end": { "line": 123, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "Modularization", "id": "modular" },
+      "content": null,
+      "children": [
+        {
+          "type": "template",
+          "attributes": { "name": "endpoint" },
+          "content": null,
+          "children": [
+            {
+              "type": "title",
+              "attributes": { "level": 3 },
+              "content": "API Endpoint",
+              "children": [],
+              "position": { "start": { "line": 127, "column": 5 }, "end": { "line": 127, "column": 30 } }
+            },
+            {
+              "type": "code",
+              "attributes": { "language": "bash" },
+              "content": "curl -X GET /api/resource",
+              "children": [],
+              "position": { "start": { "line": 128, "column": 5 }, "end": { "line": 130, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 126, "column": 3 }, "end": { "line": 131, "column": 4 } }
+        },
+        {
+          "type": "include",
+          "attributes": { "src": "./auth.sdox" },
+          "content": null,
+          "children": [],
+          "position": { "start": { "line": 133, "column": 3 }, "end": { "line": 133, "column": 30 } }
+        },
+        {
+          "type": "use",
+          "attributes": { "template": "endpoint" },
+          "content": null,
+          "children": [],
+          "position": { "start": { "line": 134, "column": 3 }, "end": { "line": 134, "column": 28 } }
+        }
+      ],
+      "position": { "start": { "line": 125, "column": 1 }, "end": { "line": 135, "column": 2 } }
+    },
+
+    {
+      "type": "divider",
+      "attributes": {},
+      "content": null,
+      "children": [],
+      "position": { "start": { "line": 137, "column": 1 }, "end": { "line": 137, "column": 9 } }
+    },
+
+    {
+      "type": "section",
+      "attributes": { "title": "AI-Native", "id": "ai" },
+      "content": null,
+      "children": [
+        {
+          "type": "dataset",
+          "attributes": { "name": "qa_training" },
+          "content": null,
+          "children": [
+            {
+              "type": "instruction",
+              "attributes": { "priority": "high" },
+              "content": "Summarize the following document in three bullet points.",
+              "children": [],
+              "position": { "start": { "line": 142, "column": 5 }, "end": { "line": 144, "column": 6 } }
+            },
+            {
+              "type": "context",
+              "attributes": { "scope": "authentication" },
+              "content": "OAuth 2.0 is the industry standard protocol\nfor authorization.",
+              "children": [],
+              "position": { "start": { "line": 146, "column": 5 }, "end": { "line": 149, "column": 6 } }
+            },
+            {
+              "type": "response",
+              "attributes": { "model": "gpt-5" },
+              "content": "- Secure delegated access\n- Multiple grant types\n- Industry-wide adoption",
+              "children": [],
+              "position": { "start": { "line": 151, "column": 5 }, "end": { "line": 155, "column": 6 } }
+            }
+          ],
+          "position": { "start": { "line": 141, "column": 3 }, "end": { "line": 156, "column": 4 } }
+        },
+        {
+          "type": "example",
+          "attributes": { "language": "python" },
+          "content": "def summarize(text):\n    return model.generate(text, max_tokens=100)",
+          "children": [],
+          "position": { "start": { "line": 158, "column": 3 }, "end": { "line": 161, "column": 4 } }
+        },
+        {
+          "type": "chunk",
+          "attributes": { "size": 500 },
+          "content": "This content is optimized for vector database ingestion.\nEach chunk boundary is explicitly defined.",
+          "children": [],
+          "position": { "start": { "line": 163, "column": 3 }, "end": { "line": 166, "column": 4 } }
+        },
+        {
+          "type": "embedding",
+          "attributes": { "model": "text-embedding-3" },
+          "content": null,
+          "children": [],
+          "position": { "start": { "line": 168, "column": 3 }, "end": { "line": 168, "column": 39 } }
+        },
+        {
+          "type": "completion",
+          "attributes": { "model": "gpt-5" },
+          "content": "Continue the documentation from here...",
+          "children": [],
+          "position": { "start": { "line": 170, "column": 3 }, "end": { "line": 172, "column": 4 } }
+        }
+      ],
+      "position": { "start": { "line": 139, "column": 1 }, "end": { "line": 173, "column": 2 } }
+    }
+  ],
+  "position": {
+    "start": { "line": 1, "column": 1 },
+    "end": { "line": 173, "column": 2 }
+  },
+  "metadata": {
+    "sdox_version": "0.1.0",
+    "source_file": "full.sdox"
+  }
+}

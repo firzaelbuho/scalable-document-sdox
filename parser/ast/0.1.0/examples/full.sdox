@@ -1,0 +1,179 @@
+#metadata {
+  #item(key="author") SDOX Team
+  #item(key="version") 0.1.0
+  #item(key="status") draft
+}
+
+#title(level=1) SDOX Full Example
+
+#paragraph {
+  This document demonstrates every tag category
+  in the Scalable Document specification.
+}
+
+#divider
+
+#section(title="Text & Semantics", id="text") {
+
+  #paragraph {
+    You can use #text(style="bold") bold text and
+    #text(style="italic") italic text inline.
+  }
+
+  #quote(author="Alan Turing") {
+    We can only see a short distance ahead,
+    but we can see plenty there that needs to be done.
+  }
+
+  #note(type="warning") {
+    Never expose API keys in client-side code.
+  }
+
+  #note(type="success") {
+    All tests passed successfully.
+  }
+}
+
+#divider
+
+#section(title="Lists", id="lists") {
+
+  #list(type="ordered") {
+    #item First step
+    #item Second step
+    #item Third step
+  }
+
+  #list(type="checklist") {
+    #item(done=true) Setup project
+    #item(done=true) Write specification
+    #item(done=false) Build parser
+    #item(done=false) Build renderer
+  }
+}
+
+#divider
+
+#section(title="Code", id="code") {
+
+  #code(language="python", title="main.py", line_number=true) {
+    def greet(name):
+        return f"Hello, {name}!"
+
+    if __name__ == "__main__":
+        print(greet("SDOX"))
+  }
+
+  #output(type="terminal") {
+    Hello, SDOX!
+  }
+}
+
+#divider
+
+#section(title="Links & Media", id="links") {
+  #url(href="https://github.com/firzaelbuho/scalable-document-sdox") SDOX GitHub
+  #image(src="logo.png", alt="SDOX Logo", width=200)
+}
+
+#divider
+
+#section(title="Tables", id="tables") {
+  #table {
+    #row {
+      #cell(header=true) Feature
+      #cell(header=true) Status
+    }
+    #row {
+      #cell Parser
+      #cell In Progress
+    }
+    #row {
+      #cell Renderer
+      #cell Planned
+    }
+  }
+}
+
+#divider
+
+#section(title="Components", id="components") {
+
+  #card(title="Quick Tip") {
+    #paragraph {
+      Use semantic tags to describe meaning,
+      not visual appearance.
+    }
+  }
+
+  #tab(title="macOS") {
+    #code(language="bash") {
+      brew install sdox
+    }
+  }
+
+  #tab(title="Linux") {
+    #code(language="bash") {
+      sudo apt install sdox
+    }
+  }
+
+  #accordion(title="Advanced Options") {
+    #paragraph {
+      Configure parser behavior in sdox.config.json
+    }
+  }
+}
+
+#divider
+
+#section(title="Modularization", id="modular") {
+
+  #template(name="endpoint") {
+    #title(level=3) API Endpoint
+    #code(language="bash") {
+      curl -X GET /api/resource
+    }
+  }
+
+  #include(src="./auth.sdox")
+  #use(template="endpoint")
+}
+
+#divider
+
+#section(title="AI-Native", id="ai") {
+
+  #dataset(name="qa_training") {
+    #instruction(priority="high") {
+      Summarize the following document in three bullet points.
+    }
+
+    #context(scope="authentication") {
+      OAuth 2.0 is the industry standard protocol
+      for authorization.
+    }
+
+    #response(model="gpt-5") {
+      - Secure delegated access
+      - Multiple grant types
+      - Industry-wide adoption
+    }
+  }
+
+  #example(language="python") {
+    def summarize(text):
+        return model.generate(text, max_tokens=100)
+  }
+
+  #chunk(size=500) {
+    This content is optimized for vector database ingestion.
+    Each chunk boundary is explicitly defined.
+  }
+
+  #embedding(model="text-embedding-3")
+
+  #completion(model="gpt-5") {
+    Continue the documentation from here...
+  }
+}

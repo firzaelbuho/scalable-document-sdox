@@ -1,0 +1,12 @@
+#title(level=1) Hello SDOX
+
+#paragraph {
+  This is a minimal SDOX document.
+  It demonstrates the basic syntax.
+}
+
+#divider
+
+#note(type="info") {
+  Welcome to Scalable Document!
+}
