@@ -2,6 +2,7 @@
 	import type { TagDefinition } from '$lib/data/tags';
 	import AttributeTable from './AttributeTable.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
+	import TagExample from './TagExample.svelte';
 
 	interface Props {
 		tag: TagDefinition;
@@ -31,15 +32,7 @@
 				<h4 class="detail-title">Examples</h4>
 				<div class="examples-list">
 					{#each tag.examples as example}
-						<div class="example">
-							{#if example.title}
-								<span class="example-title">{example.title}</span>
-							{/if}
-							<CodeBlock code={example.code} language="sdox" />
-							{#if example.description}
-								<p class="example-desc">{example.description}</p>
-							{/if}
-						</div>
+						<TagExample {example} />
 					{/each}
 				</div>
 			</div>

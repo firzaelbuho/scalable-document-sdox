@@ -1,0 +1,22 @@
+jadi saya sedang buat project seperti di : docs\project.md
+
+untuk tags di versi ini apa saja ada di : docs\tags\0.1.0.json
+dan untuk landing page sudah buat di svelte di folder : sdox-web
+
+nah rencana mau buat AST buat jadi jembatan unbtuk di parse, sebelumnya sudah bikin di : parser\ast\0.1.0
+
+nah pertanyaannya apa di AST itu juga sudah diatur nanti missal tag element ini bakal divisualisasikan seperti apa detil kayak pas missal diterjemahin dirender bentuknya kayak apa gitu ? atau hanya gambaran umum saja nanti bebas tiap parser / renderer mau style kayak apa visualisasinya yg penting spesifikasi dan kerangka utamanya sama? 
+
+
+
+
+
+saya sudah buat landing page di : sdox-web dg sveltekit+bun
+
+nah rencana mau dan sudah ada sebenarnya halaman /live-preview. cuma belum sempurna karena untuk semua tag masih generic gak semstinya visualnya, missal kayak #quote gimana, #table #row, dan sebagainya, tolong buatkan sebagaimana mestinya yg benar buatin ulang ya khusus halaman /live-preview agar tiap tag element jadi sesuai dg yg seharusnya sesuai fungsinya, uniq jangan generik namun konsistenm 1 style
+
+
+berdasarkan ast di : parser\ast\0.1.0
+dictionary di : docs\dictionary\0.1.0.md
+
+buatkan chrome extension untuk bisa memformat / menampilkan file text sdox ini di folder : parser\chrome-extension

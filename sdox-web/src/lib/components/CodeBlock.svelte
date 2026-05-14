@@ -19,37 +19,22 @@
 		setTimeout(() => (copied = false), 2000);
 	}
 
-	// Simple SDOX syntax highlighting
+	// Simple syntax highlighting
 	function highlightLine(line: string): string {
-		if (language !== 'sdox') {
-			return escapeHtml(line);
-		}
-
 		let result = escapeHtml(line);
 
-		// Highlight tags: #tagname
-		result = result.replace(
-			/(#\w+)/g,
-			'<span class="token-tag">$1</span>'
-		);
-
-		// Highlight attributes: key=value or key="value"
-		result = result.replace(
-			/(\w+)(=)(&quot;[^&]*&quot;|&\w+;|\w+)/g,
-			'<span class="token-attr">$1</span><span class="token-punct">$2</span><span class="token-value">$3</span>'
-		);
-
-		// Highlight parentheses
-		result = result.replace(
-			/([(){}])/g,
-			'<span class="token-punct">$1</span>'
-		);
-
-		// Highlight strings that weren't caught
-		result = result.replace(
-			/(&quot;[^&]*&quot;)/g,
-			'<span class="token-string">$1</span>'
-		);
+		if (language === 'sdox') {
+			// SDOX Highlighting
+			result = result.replace(/(#\w+)/g, '<span class="token-tag">$1</span>');
+			result = result.replace(/(\w+)(=)(&quot;[^&]*&quot;|&\w+;|\w+)/g, '<span class="token-attr">$1</span><span class="token-punct">$2</span><span class="token-value">$3</span>');
+			result = result.replace(/([(){}])/g, '<span class="token-punct">$1</span>');
+			result = result.replace(/(&quot;[^&]*&quot;)/g, '<span class="token-string">$1</span>');
+		} else {
+			// Generic Highlighting
+			result = result.replace(/\b(def|return|class|if|else|elif|for|while|import|from|const|let|var|function|async|await|echo|export|true|false|None|null|undefined)\b/g, '<span class="token-keyword">$1</span>');
+			result = result.replace(/\b([a-zA-Z_]\w*)(?=\()/g, '<span class="token-function">$1</span>');
+			result = result.replace(/(&quot;[^&]*&quot;|'[^']*')/g, '<span class="token-string">$1</span>');
+		}
 
 		return result;
 	}
@@ -185,6 +170,15 @@
 	:global(.token-tag) {
 		color: #38bdf8;
 		font-weight: 600;
+	}
+
+	:global(.token-keyword) {
+		color: #f472b6; /* pink */
+		font-weight: 600;
+	}
+
+	:global(.token-function) {
+		color: #60a5fa; /* blue */
 	}
 
 	:global(.token-attr) {

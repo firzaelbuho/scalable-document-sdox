@@ -1,0 +1,64 @@
+{
+  "name": "sdox-tool",
+  "displayName": "SDOX Tool",
+  "description": "Language support, IntelliSense, and Live Preview for Scalable Document (SDOX)",
+  "version": "0.1.0",
+  "publisher": "firzaelbuho",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "sdox",
+        "aliases": ["SDOX", "sdox"],
+        "extensions": [".sdox"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sdox",
+        "scopeName": "source.sdox",
+        "path": "./syntaxes/sdox.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "sdox.showPreview",
+        "title": "SDOX: Open Live Preview",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "sdox.showPreview",
+          "when": "resourceLangId == sdox",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "bun run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "bun run compile && bun run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "18.x",
+    "typescript": "^5.1.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.41.0"
+  }
+}

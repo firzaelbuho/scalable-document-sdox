@@ -6,7 +6,8 @@
 
 	const navLinks = [
 		{ label: 'Home', href: '/' },
-		{ label: 'Documentation', href: '/docs' }
+		{ label: 'Documentation', href: '/docs' },
+		{ label: 'Live Preview', href: '/live-preview' }
 	];
 
 	const githubUrl = 'https://github.com/firzaelbuho/scalable-document-sdox';

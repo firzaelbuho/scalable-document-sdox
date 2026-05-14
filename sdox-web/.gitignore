@@ -21,3 +21,13 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# private
+
+docs/instruction.txt
+docs/context.txt
+
+# public
+docs/dictionary
+

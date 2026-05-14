@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "SDOX",
+  "patterns": [
+    {
+      "include": "#tags"
+    },
+    {
+      "include": "#blocks"
+    }
+  ],
+  "repository": {
+    "tags": {
+      "patterns": [
+        {
+          "match": "(#[a-zA-Z0-9_]+)",
+          "name": "keyword.control.sdox"
+        },
+        {
+          "begin": "\\(",
+          "end": "\\)",
+          "patterns": [
+            {
+              "include": "#attributes"
+            }
+          ]
+        }
+      ]
+    },
+    "attributes": {
+      "patterns": [
+        {
+          "match": "([a-zA-Z0-9_]+)\\s*=",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.sdox" }
+          }
+        },
+        {
+          "match": "\"(.*?)\"",
+          "name": "string.quoted.double.sdox"
+        },
+        {
+          "match": "\\b(true|false)\\b",
+          "name": "constant.language.boolean.sdox"
+        },
+        {
+          "match": "\\b\\d+(\\.\\d+)?\\b",
+          "name": "constant.numeric.sdox"
+        }
+      ]
+    },
+    "blocks": {
+      "patterns": [
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [
+            { "include": "#tags" },
+            { "include": "#blocks" }
+          ]
+        }
+      ]
+    }
+  },
+  "scopeName": "source.sdox"
+}
