@@ -8,7 +8,7 @@
 
 **A semantic, structured, and AI-friendly document language — built as a modern alternative to Markdown.**
 
-🌐 **Official Website & Live Preview:** [https://sdox-dev.netlify.app](https://sdox-dev.netlify.app)
+🌐 **Official Website & Live Preview:** [https://sdox-dev.vercel.app](https://sdox-dev.vercel.app)
 
 SDOX rethinks how documents should be written. Instead of relying on fragile symbols and ambiguous syntax, every element is a **semantic tag** — consistent, predictable, and machine-readable by design.
 
