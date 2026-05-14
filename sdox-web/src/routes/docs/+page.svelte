@@ -168,6 +168,59 @@
 			</div>
 		</DocSection>
 
+		<!-- AI Dataset -->
+		<DocSection id="ai-dataset" title="LLM Context Dataset" description="Train or prompt Large Language Models (LLMs) to natively understand and generate SDOX format.">
+			<div class="ai-dataset-box glass-card">
+				<div class="dataset-header">
+					<div>
+						<h4>SDOX v0.1.0 Prompt Context</h4>
+						<p>Copy this prompt or provide the raw markdown file as context to any LLM (ChatGPT, Claude, etc.) so it can perfectly generate SDOX syntax instead of Markdown.</p>
+					</div>
+					<div class="action-buttons">
+						<button class="btn btn-secondary" onclick={() => {
+							fetch('/sdox-llm-dataset.md')
+								.then(res => res.text())
+								.then(text => {
+									navigator.clipboard.writeText(text);
+									alert('Prompt copied to clipboard!');
+								})
+								.catch(err => alert('Failed to copy: ' + err));
+						}}>
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+								<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+							</svg>
+							Copy Prompt
+						</button>
+						<a href="/sdox-llm-dataset.md" download="sdox-llm-dataset-v0.1.0.md" rel="external" class="btn btn-primary">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+								<polyline points="7 10 12 15 17 10"></polyline>
+								<line x1="12" y1="15" x2="12" y2="3"></line>
+							</svg>
+							Download .md
+						</a>
+					</div>
+				</div>
+				<div class="dataset-preview">
+					<div class="preview-header">
+						<span>Preview: sdox-llm-dataset.md</span>
+					</div>
+					<pre><code># SDOX (Scalable Document) v0.1.0 - LLM Knowledge Dataset
+
+You are an AI assistant generating SDOX (Scalable Document) format. 
+SDOX is a deterministic, semantic document language that replaces Markdown. Everything in SDOX is a tag. 
+There is no ambiguous syntax (like *, #, or > in Markdown). 
+
+## 1. Syntax Rules
+1. **Tag Format**: Every element is defined by a tag starting with `#`.
+   - **Inline Form**: `#tag(attr="value") content...`
+   - **Block Form**: `#tag(attr="value") &#123; content... &#125;`
+
+[...Download to see full rules & tag dictionary...]</code></pre>
+				</div>
+			</div>
+		</DocSection>
 		<!-- Tag Reference by Category -->
 		{#each tagCategories as category}
 			<DocSection
@@ -316,6 +369,75 @@
 	@media (max-width: 768px) {
 		.intro-principles {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	/* --- AI Dataset --- */
+	.ai-dataset-box {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+	}
+
+	.dataset-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-6);
+		padding: var(--space-6);
+		background: rgba(56, 189, 248, 0.05);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.dataset-header h4 {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		color: var(--color-accent-primary);
+		margin-bottom: var(--space-2);
+	}
+
+	.dataset-header p {
+		font-size: var(--text-sm);
+		color: var(--color-text-secondary);
+		line-height: var(--leading-relaxed);
+		max-width: 500px;
+	}
+
+	.action-buttons {
+		display: flex;
+		gap: var(--space-3);
+		align-items: center;
+	}
+
+	.dataset-preview {
+		background: var(--color-bg-code);
+	}
+
+	.preview-header {
+		padding: var(--space-2) var(--space-4);
+		font-family: var(--font-mono);
+		font-size: var(--text-xs);
+		color: var(--color-text-tertiary);
+		border-bottom: 1px solid var(--color-border);
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.dataset-preview pre {
+		margin: 0;
+		padding: var(--space-4);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		color: var(--color-text-code);
+		overflow-x: auto;
+	}
+
+	@media (max-width: 768px) {
+		.dataset-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--space-4);
 		}
 	}
 </style>

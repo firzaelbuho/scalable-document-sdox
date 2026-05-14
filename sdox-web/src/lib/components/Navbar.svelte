@@ -7,7 +7,8 @@
 	const navLinks = [
 		{ label: 'Home', href: '/' },
 		{ label: 'Documentation', href: '/docs' },
-		{ label: 'Live Preview', href: '/live-preview' }
+		{ label: 'Live Preview', href: '/live-preview' },
+		{ label: 'Extensions', href: '/extensions' }
 	];
 
 	const githubUrl = 'https://github.com/firzaelbuho/scalable-document-sdox';
@@ -28,7 +29,7 @@
 <nav class="navbar" class:scrolled>
 	<div class="navbar-inner container">
 		<a href="/" class="logo" onclick={closeMobile}>
-			<span class="logo-icon">⬡</span>
+			<img src="/favicon.svg" alt="SDOX Logo" class="logo-icon" width="28" height="28" />
 			<span class="logo-text">SDOX</span>
 			<span class="logo-version">v0.1</span>
 		</a>
@@ -108,8 +109,8 @@
 	}
 
 	.logo-icon {
-		font-size: 1.5rem;
-		color: var(--color-accent-primary);
+		width: 28px;
+		height: 28px;
 		filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
 	}
 

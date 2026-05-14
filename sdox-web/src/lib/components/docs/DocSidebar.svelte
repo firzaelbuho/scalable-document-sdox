@@ -42,6 +42,13 @@
 		>
 			Quick Start
 		</a>
+		<a
+			href="#ai-dataset"
+			class="sidebar-link intro-link"
+			class:active={activeSection === 'ai-dataset'}
+		>
+			LLM Context Dataset
+		</a>
 
 		<div class="sidebar-divider"></div>
 
