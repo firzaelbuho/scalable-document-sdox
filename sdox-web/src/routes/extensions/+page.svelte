@@ -40,7 +40,7 @@
 
 				<div class="ext-actions">
 					<a
-						href="https://github.com/user-attachments/files/27740382/sdox-chrome-extension.0.2.0.zip"
+						href="https://github.com/firzaelbuho/scalable-document-sdox/releases/download/0.2.0/sdox-chrome-extension.0.2.0.zip"
 						download="sdox-chrome-extension-v0.2.0.zip"
 						rel="external"
 						class="btn btn-primary"

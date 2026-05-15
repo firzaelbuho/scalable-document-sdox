@@ -102,6 +102,12 @@ export class PreviewPanel {
 
     private _getFullHtml(bodyHtml: string): string {
         const stylesPath = path.join(this._extensionUri.fsPath, 'src', 'preview', 'previewStyles.css');
+        const libPath = vscode.Uri.file(path.join(this._extensionUri.fsPath, 'lib'));
+        const katexJs = this._panel.webview.asWebviewUri(vscode.Uri.joinPath(libPath, 'katex.min.js'));
+        const katexCss = this._panel.webview.asWebviewUri(vscode.Uri.joinPath(libPath, 'katex.min.css'));
+        const mermaidJs = this._panel.webview.asWebviewUri(vscode.Uri.joinPath(libPath, 'mermaid.min.js'));
+        const markedJs = this._panel.webview.asWebviewUri(vscode.Uri.joinPath(libPath, 'marked.min.js'));
+
         let css = '';
         try {
             css = fs.readFileSync(stylesPath, 'utf-8');
@@ -120,12 +126,24 @@ export class PreviewPanel {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; img-src ${this._panel.webview.cspSource} https: data:; font-src https:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}' ${this._panel.webview.cspSource}; script-src 'nonce-${nonce}'; img-src ${this._panel.webview.cspSource} https: data:; font-src ${this._panel.webview.cspSource} https:;">
     <title>SDOX Preview</title>
+    <link rel="stylesheet" href="${katexCss}" nonce="${nonce}">
     <style nonce="${nonce}">${css}</style>
 </head>
 <body>
     <div class="sdox-preview-container">${bodyHtml}</div>
+
+    <script nonce="${nonce}" src="${katexJs}"></script>
+    <script nonce="${nonce}" src="${mermaidJs}"></script>
+    <script nonce="${nonce}" src="${markedJs}"></script>
+    <script nonce="${nonce}">
+        // Initialize Mermaid
+        if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+            mermaid.run({ querySelector: '.mermaid' });
+        }
+    </script>
 </body>
 </html>`;
     }

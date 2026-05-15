@@ -16,6 +16,9 @@ const aiTagMeta: Record<string, { icon: string; color: string; label: string }> 
     completion: { icon: '✨', color: '#f472b6', label: 'Completion' },
 };
 
+declare const katex: any;
+declare const marked: any;
+
 function escapeHtml(text: string | number | boolean | null | undefined): string {
     if (text === null || text === undefined) { return ''; }
     return String(text)
@@ -29,6 +32,29 @@ function renderChildren(children: SdoxNode[]): string {
     if (!children || children.length === 0) { return ''; }
     return children.map(child => renderSdoxAST(child)).join('');
 }
+
+function collectHeadings(node: SdoxNode, headings: {title: string, id: string, level: number}[] = []): {title: string, id: string, level: number}[] {
+    if (!node) { return headings; }
+    if (node.type === 'section' && node.attributes.title) {
+        headings.push({
+            title: String(node.attributes.title),
+            id: String(node.attributes.id || String(node.attributes.title).toLowerCase().replace(/\s+/g, '-')),
+            level: 1
+        });
+    } else if (node.type === 'title') {
+        headings.push({
+            title: node.content || '',
+            id: String(node.attributes.id || (node.content || '').toLowerCase().replace(/\s+/g, '-')),
+            level: Number(node.attributes.level || 1)
+        });
+    }
+    if (node.children) {
+        node.children.forEach(child => collectHeadings(child, headings));
+    }
+    return headings;
+}
+
+let cachedHeadings: {title: string, id: string, level: number}[] = [];
 
 function renderCodeBlock(code: string, language: string, title?: string, _showLineNumbers?: boolean): string {
     const escapedCode = escapeHtml(code);
@@ -54,6 +80,7 @@ export function renderSdoxAST(node: SdoxNode): string {
 
     switch (node.type) {
         case 'document':
+            cachedHeadings = collectHeadings(node);
             return `<main class="sdox-doc">${childrenHTML}</main>`;
 
         case 'section':
@@ -114,7 +141,6 @@ export function renderSdoxAST(node: SdoxNode): string {
                 </div>
             </div>`;
         }
-
         case 'list': {
             const listType = String(attr.type || 'unordered');
             const ListTag = listType === 'ordered' ? 'ol' : 'ul';
@@ -131,6 +157,33 @@ export function renderSdoxAST(node: SdoxNode): string {
             }).join('');
             return `<${ListTag} class="sdox-list list-${escapeHtml(listType)}">${itemsHTML}</${ListTag}>`;
         }
+
+        case 'item':
+            // Standalone item fallback
+            const itemDone = attr.done === true;
+            return `
+            <div class="sdox-item standalone ${itemDone ? 'done' : ''}">
+                <span class="check-box ${itemDone ? 'checked' : ''}">${itemDone ? '✓' : ''}</span>
+                <span class="item-text">${innerContent}</span>
+            </div>`;
+
+        case 'ref':
+            return `
+            <a href="#${escapeHtml(attr.to)}" class="sdox-ref">
+                <span class="ref-icon">⚓</span> ${escapeHtml(content || String(attr.to))}
+            </a>`;
+
+        case 'toc':
+            const tocItems = cachedHeadings.map(h => `
+                <li class="toc-level-${h.level}">
+                    <a href="#${escapeHtml(h.id)}">${escapeHtml(h.title)}</a>
+                </li>
+            `).join('');
+            return `
+            <div class="sdox-toc">
+                <div class="toc-header">Table of Contents</div>
+                <ul class="toc-list">${tocItems}</ul>
+            </div>`;
 
         case 'url':
             return `
@@ -212,6 +265,26 @@ export function renderSdoxAST(node: SdoxNode): string {
         case 'use':
             return `<div class="sdox-chip chip-use"><span class="chip-icon">⚡</span> <code>${escapeHtml(attr.template)}</code></div>`;
 
+        case 'dataset':
+        case 'embedding':
+        case 'chunk':
+        case 'context':
+        case 'completion': {
+            const meta = aiTagMeta[node.type] || { icon: '🔷', color: '#38bdf8', label: node.type };
+            return `
+            <div class="sdox-ai-block" style="--ai-color:${meta.color}">
+                <div class="ai-header"><span class="ai-icon">${meta.icon}</span><span class="ai-label">${meta.label}</span>
+                    ${attr.name ? `<span class="model-badge">${escapeHtml(attr.name)}</span>` : ''}
+                    ${attr.scope ? `<span class="model-badge">${escapeHtml(attr.scope)}</span>` : ''}
+                    ${attr.model ? `<span class="model-badge">${escapeHtml(attr.model)}</span>` : ''}
+                    ${attr.size ? `<span class="model-badge">${escapeHtml(attr.size)} tokens</span>` : ''}
+                </div>
+                ${(node.children.length > 0 || content) ? `
+                <div class="ai-body">${node.children.length > 0 ? childrenHTML : `<p>${escapeHtml(content)}</p>`}</div>
+                ` : ''}
+            </div>`;
+        }
+
         case 'instruction':
             return `
             <div class="sdox-ai-block ai-instruction">
@@ -254,25 +327,113 @@ export function renderSdoxAST(node: SdoxNode): string {
             </div>`;
         }
 
-        case 'dataset':
-        case 'embedding':
-        case 'chunk':
-        case 'context':
-        case 'completion': {
-            const meta = aiTagMeta[node.type] || { icon: '🔷', color: '#38bdf8', label: node.type };
+        case 'chart':
             return `
-            <div class="sdox-ai-block" style="--ai-color:${meta.color}">
-                <div class="ai-header"><span class="ai-icon">${meta.icon}</span><span class="ai-label">${meta.label}</span>
-                    ${attr.name ? `<span class="model-badge">${escapeHtml(attr.name)}</span>` : ''}
-                    ${attr.scope ? `<span class="model-badge">${escapeHtml(attr.scope)}</span>` : ''}
-                    ${attr.model ? `<span class="model-badge">${escapeHtml(attr.model)}</span>` : ''}
-                    ${attr.size ? `<span class="model-badge">${escapeHtml(attr.size)} tokens</span>` : ''}
+            <div class="sdox-chart-card">
+                ${attr.title ? `<div class="chart-header">${escapeHtml(attr.title)}</div>` : ''}
+                <div class="chart-visual">
+                    <div class="chart-bars">
+                        ${node.children.filter(c => c.type === 'data').map(data => `
+                            <div class="chart-bar-group">
+                                <div class="chart-bar" style="height: ${Math.min((Number(data.attributes.value) / 2), 100)}px; background: ${data.attributes.color || 'var(--color-accent-primary)'}"></div>
+                                <div class="chart-label">${escapeHtml(data.attributes.label)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-                ${(node.children.length > 0 || content) ? `
-                <div class="ai-body">${node.children.length > 0 ? childrenHTML : `<p>${escapeHtml(content)}</p>`}</div>
-                ` : ''}
+                <div class="chart-type-tag">${escapeHtml(attr.type || 'bar')}</div>
             </div>`;
-        }
+
+        case 'math':
+            try {
+                const mathHtml = katex.renderToString(content, {
+                    displayMode: attr.display !== 'inline',
+                    throwOnError: false
+                });
+                return `<div class="sdox-math-block ${attr.display === 'inline' ? 'is-inline' : ''}">${mathHtml}</div>`;
+            } catch (e) {
+                return `<div class="sdox-math-block error"><pre>${escapeHtml(content)}</pre></div>`;
+            }
+
+        case 'markdown':
+            try {
+                return `<div class="sdox-markdown-render">${marked.parse(content || '')}</div>`;
+            } catch (e) {
+                return `<div class="sdox-markdown-render error"><pre>${escapeHtml(content)}</pre></div>`;
+            }
+
+        case 'diagram':
+            return `
+            <div class="sdox-diagram-block">
+                <div class="diagram-header">Diagram: ${escapeHtml(attr.type || 'flowchart')}</div>
+                <div class="mermaid">${content}</div>
+            </div>`;
+
+        case 'timeline':
+            return `
+            <div class="sdox-timeline ${attr.orientation === 'horizontal' ? 'is-horizontal' : ''}">
+                ${childrenHTML}
+            </div>`;
+
+        case 'event':
+            return `
+            <div class="timeline-event">
+                <div class="event-dot"></div>
+                <div class="event-meta">
+                    <span class="event-date">${escapeHtml(attr.date)}</span>
+                    ${attr.title ? `<span class="event-title">${escapeHtml(attr.title)}</span>` : ''}
+                </div>
+                <div class="event-body">${node.children.length > 0 ? childrenHTML : escapeHtml(content)}</div>
+            </div>`;
+
+        case 'grid':
+            return `
+            <div class="sdox-grid" style="grid-template-columns: repeat(${attr.columns || 2}, 1fr);">
+                ${childrenHTML}
+            </div>`;
+
+        case 'column':
+            return `<div class="sdox-column">${childrenHTML}</div>`;
+
+        case 'badge':
+            return `<span class="sdox-badge badge-${escapeHtml(attr.type || 'info')}">${escapeHtml(content)}</span>`;
+
+        case 'term':
+            return `<span class="sdox-term" id="${escapeHtml(attr.id)}">${escapeHtml(content)}</span>`;
+
+        case 'definition':
+            return `
+            <div class="sdox-definition">
+                <span class="def-label">Definition:</span>
+                <div class="def-body">${node.children.length > 0 ? childrenHTML : escapeHtml(content)}</div>
+            </div>`;
+
+        case 'changelog':
+            return `
+            <div class="sdox-changelog">
+                <div class="changelog-header">Update Log</div>
+                <div class="changelog-content">${childrenHTML}</div>
+            </div>`;
+
+        case 'video':
+            return `
+            <div class="sdox-video-player">
+                <div class="player-header"><span class="player-icon">🎬</span> ${escapeHtml(String(attr.src).split('/').pop())}</div>
+                <video src="${escapeHtml(attr.src)}" controls class="sdox-video"></video>
+            </div>`;
+
+        case 'audio':
+            return `
+            <div class="sdox-audio-player">
+                <div class="player-header"><span class="player-icon">🎵</span> Audio Track</div>
+                <audio src="${escapeHtml(attr.src)}" controls class="sdox-audio"></audio>
+            </div>`;
+
+        case 'html':
+            return `<div class="sdox-html-render">${content}</div>`;
+
+        case 'markdown':
+            return `<div class="sdox-markdown-render"><pre>${escapeHtml(content)}</pre></div>`;
 
         default:
             return `

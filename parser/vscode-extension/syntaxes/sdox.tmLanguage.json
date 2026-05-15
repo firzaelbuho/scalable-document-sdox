@@ -19,15 +19,14 @@
     "tag-line": {
       "patterns": [
         {
-          "comment": "Structure tags: #title, #paragraph, #section, #divider",
-          "match": "(#)(title|paragraph|section|divider)\\b",
+          "comment": "Structure tags: #title, #paragraph, #section, #divider, #toc, #ref",
+          "match": "(#)(title|paragraph|section|divider|toc|ref)\\b",
           "captures": {
             "1": { "name": "punctuation.definition.tag.sdox" },
             "2": { "name": "keyword.control.structure.sdox" }
           }
         },
         {
-          "comment": "Text & semantic tags: #text, #quote, #note",
           "match": "(#)(text|quote|note)\\b",
           "captures": {
             "1": { "name": "punctuation.definition.tag.sdox" },
@@ -51,8 +50,8 @@
           }
         },
         {
-          "comment": "Code tags: #code, #output",
-          "match": "(#)(code|output)\\b",
+          "comment": "Code & Integration tags: #code, #output, #html, #markdown, #math, #diagram",
+          "match": "(#)(code|output|html|markdown|math|diagram)\\b",
           "captures": {
             "1": { "name": "punctuation.definition.tag.sdox" },
             "2": { "name": "keyword.control.code.sdox" }
@@ -67,8 +66,16 @@
           }
         },
         {
-          "comment": "Component tags: #card, #tab, #accordion",
-          "match": "(#)(card|tab|accordion)\\b",
+          "comment": "Visualization & Layout tags: #chart, #data, #timeline, #event, #grid, #column",
+          "match": "(#)(chart|data|timeline|event|grid|column)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.visualization.sdox" }
+          }
+        },
+        {
+          "comment": "Component tags: #card, #tab, #accordion, #badge, #changelog",
+          "match": "(#)(card|tab|accordion|badge|changelog)\\b",
           "captures": {
             "1": { "name": "punctuation.definition.tag.sdox" },
             "2": { "name": "keyword.control.component.sdox" }

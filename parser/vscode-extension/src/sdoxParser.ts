@@ -12,13 +12,13 @@ export interface SdoxNode {
 }
 
 /** Tags whose block body is captured as raw text (no nested tag parsing). */
-const RAW_CONTENT_TAGS = new Set(['code', 'output', 'example']);
+const RAW_CONTENT_TAGS = new Set(['code', 'output', 'example', 'math', 'diagram', 'html', 'markdown']);
 
 /** Tags that act as block containers — recursively parsed for nested tags. */
 const CONTAINER_TAGS = new Set([
     'section', 'list', 'table', 'row', 'card', 'tab', 'accordion',
     'template', 'dataset', 'metadata', 'context', 'chunk', 'completion',
-    'note', 'quote', 'instruction', 'response'
+    'note', 'quote', 'instruction', 'response', 'grid', 'chart', 'timeline', 'changelog'
 ]);
 
 /**

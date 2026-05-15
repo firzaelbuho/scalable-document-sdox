@@ -1,8 +1,8 @@
 {
   "name": "sdox-tool",
   "displayName": "SDOX Tool",
-  "description": "Syntax highlighting, IntelliSense, and Live Preview for Scalable Document (SDOX)",
-  "version": "0.1.0",
+  "description": "Full authoring environment for Scalable Document (SDOX) v0.2.0.",
+  "version": "0.2.0",
   "publisher": "firzaelbuho",
   "license": "MIT",
   "icon": "icons/sdox-logo.png",
