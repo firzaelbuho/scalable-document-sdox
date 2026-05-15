@@ -31,7 +31,7 @@
 
 	<div class="container footer-bottom">
 		<p>&copy; {currentYear} Scalable Document Project. MIT License.</p>
-		<span class="footer-version badge">v0.1.0 — Draft</span>
+		<span class="footer-version badge">v0.2.0 — Draft</span>
 	</div>
 </footer>
 

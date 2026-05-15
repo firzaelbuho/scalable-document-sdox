@@ -1,4 +1,4 @@
-# SDOX (Scalable Document) v0.1.0 - LLM Knowledge Dataset
+# SDOX (Scalable Document) v0.2.0 - LLM Knowledge Dataset
 
 You are an AI assistant generating SDOX (Scalable Document) format. 
 SDOX is a deterministic, semantic document language that replaces Markdown. Everything in SDOX is a tag. 

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+    <defs>
+        <linearGradient id="sdox-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="50%" stop-color="#06b6d4"/>
+            <stop offset="100%" stop-color="#0891b2"/>
+        </linearGradient>
+
+        <mask id="hash-mask">
+            <!-- Solid white hexagon with subtly rounded outer corners (Fibonacci Radius = 233) -->
+            <polygon points="256,23 457.78,139.5 457.78,372.5 256,489 54.22,372.5 54.22,139.5" fill="white" stroke="white" stroke-width="16" stroke-linejoin="round" />
+            
+            <!-- Cut out hashtag 
+                 Stroke Width = 55
+                 Inner Hole = 89
+                 Distance = 144
+                 Outer Bounds = 233 
+                 All based on Fibonacci / Golden Ratio principles 
+            -->
+            <g stroke="black" stroke-width="55" stroke-linecap="square">
+                <!-- Vertical lines (parallel to hexagon's side edges) -->
+                <line x1="184" y1="0" x2="184" y2="512" />
+                <line x1="328" y1="0" x2="328" y2="512" />
+                
+                <!-- Slanted lines (parallel to hexagon's top-right & bottom-left edges) -->
+                <line x1="0" y1="320.56" x2="512" y2="25.16" />
+                <line x1="0" y1="486.84" x2="512" y2="191.44" />
+            </g>
+        </mask>
+    </defs>
+
+    <rect width="512" height="512" fill="url(#sdox-grad)" mask="url(#hash-mask)" />
+</svg>

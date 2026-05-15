@@ -4,13 +4,18 @@
 
 <svelte:head>
 	<title>Extensions - SDOX</title>
-	<meta name="description" content="Download official extensions and tools for Scalable Document (SDOX)." />
+	<meta
+		name="description"
+		content="Download official extensions and tools for Scalable Document (SDOX)."
+	/>
 </svelte:head>
 
 <div class="extensions-page">
 	<div class="header-section" in:fly={{ y: 20, duration: 600, delay: 100 }}>
 		<h1 class="page-title">Extensions & Tooling</h1>
-		<p class="page-desc">Supercharge your SDOX workflow with official browser and editor extensions.</p>
+		<p class="page-desc">
+			Supercharge your SDOX workflow with official browser and editor extensions.
+		</p>
 	</div>
 
 	<div class="extensions-grid" in:fade={{ duration: 800, delay: 200 }}>
@@ -20,21 +25,36 @@
 				<img src="/favicon.svg" alt="SDOX Chrome Extension" class="ext-logo" />
 				<div class="glow-effect"></div>
 			</div>
-			
+
 			<div class="ext-content">
 				<div class="ext-badges">
-					<span class="badge status-released">Released v0.1.0</span>
+					<span class="badge status-released">Released v0.2.0</span>
 					<span class="badge platform-chrome">Chrome / Edge</span>
 				</div>
-				
+
 				<h2 class="ext-title">SDOX Viewer for Chrome</h2>
 				<p class="ext-description">
-					Instantly preview `.sdox` files natively in your browser. Features offline rendering, AST parsing, and built-in hot-toggling between Raw Syntax and Live Preview modes.
+					Instantly preview `.sdox` files natively in your browser. Features offline rendering, AST
+					parsing, and built-in hot-toggling between Raw Syntax and Live Preview modes.
 				</p>
 
 				<div class="ext-actions">
-					<a href="https://github.com/user-attachments/files/27740382/sdox-chrome-extension.0.1.0.zip" download="sdox-chrome-extension-v0.1.0.zip" rel="external" class="btn btn-primary">
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<a
+						href="https://github.com/user-attachments/files/27740382/sdox-chrome-extension.0.2.0.zip"
+						download="sdox-chrome-extension-v0.2.0.zip"
+						rel="external"
+						class="btn btn-primary"
+					>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 							<polyline points="7 10 12 15 17 10"></polyline>
 							<line x1="12" y1="15" x2="12" y2="3"></line>
@@ -50,7 +70,10 @@
 						<li>Open Google Chrome and navigate to <code>chrome://extensions/</code>.</li>
 						<li>Enable <strong>Developer mode</strong> in the top right corner.</li>
 						<li>Click <strong>Load unpacked</strong> and select the extracted folder.</li>
-						<li><strong>Important:</strong> Click "Details" on the extension and enable <em>"Allow access to file URLs"</em> so it can read local `.sdox` files.</li>
+						<li>
+							<strong>Important:</strong> Click "Details" on the extension and enable
+							<em>"Allow access to file URLs"</em> so it can read local `.sdox` files.
+						</li>
 					</ol>
 				</div>
 			</div>
@@ -59,27 +82,36 @@
 		<!-- VS Code Extension Card (Coming Soon) -->
 		<div class="extension-card vscode-ext disabled">
 			<div class="ext-icon-wrapper">
-				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="ext-logo vscode-icon">
+				<svg
+					width="48"
+					height="48"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="ext-logo vscode-icon"
+				>
 					<path d="M4 18l-2-2 2-2M20 6l2 2-2 2M14 2l4 4M10 22l-4-4"></path>
 					<path d="M14 2v20M10 2v20"></path>
 				</svg>
 			</div>
-			
+
 			<div class="ext-content">
 				<div class="ext-badges">
 					<span class="badge status-upcoming">Coming Soon</span>
 					<span class="badge platform-vscode">VS Code</span>
 				</div>
-				
+
 				<h2 class="ext-title">SDOX Language Server</h2>
 				<p class="ext-description">
-					The official VS Code extension for SDOX. Will feature advanced syntax highlighting, tag autocompletion, real-time AST linting, and side-by-side Live Preview.
+					The official VS Code extension for SDOX. Will feature advanced syntax highlighting, tag
+					autocompletion, real-time AST linting, and side-by-side Live Preview.
 				</p>
 
 				<div class="ext-actions">
-					<button class="btn btn-secondary" disabled>
-						In Development
-					</button>
+					<button class="btn btn-secondary" disabled> In Development </button>
 				</div>
 			</div>
 		</div>

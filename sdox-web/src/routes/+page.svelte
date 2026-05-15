@@ -2,21 +2,24 @@
 	import { tagCategories, getTagCount } from '$lib/data/tags';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 
-	const heroCode = `#title(level=1) Getting Started with SDOX
+	const heroCode = `#title(level=1) SDOX v0.2.0
+#badge(type="success") New Features
 
-#paragraph {
-  Scalable Document is a semantic document
-  language designed for humans and AI alike.
+#grid(columns=2) {
+  #column {
+    #math { \int_{a}^{b} f(x) dx }
+  }
+  #column {
+    #chart(type="bar") {
+      #data(label="A", value=80)
+      #data(label="B", value=120)
+    }
+  }
 }
 
-#note(type="info") {
-  SDOX uses consistent #tag syntax for
-  every element — no more symbol ambiguity.
-}
-
-#code(language="python", line_number=true) {
-  def greet(name):
-      return f"Hello, {name}!"
+#diagram(type="flowchart") {
+  graph LR;
+  A-->B;
 }`;
 
 	const markdownExample = `# Heading
@@ -132,7 +135,7 @@ print("hello")
 	<div class="container hero-inner">
 		<div class="hero-content">
 			<div class="hero-badge badge animate-fade-in-up">
-				<span>v0.1.0</span>
+				<span>v0.2.0</span>
 				<span class="badge-sep">·</span>
 				<span>Draft Specification</span>
 			</div>

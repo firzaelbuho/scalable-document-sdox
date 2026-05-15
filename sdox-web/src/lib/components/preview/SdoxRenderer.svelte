@@ -1,6 +1,11 @@
 <script lang="ts">
 	import type { ASTNode } from '../../utils/sdoxParser';
 	import CodeBlock from '../CodeBlock.svelte';
+	import mermaid from 'mermaid';
+	import { marked } from 'marked';
+
+	import katex from 'katex';
+	import 'katex/dist/katex.min.css';
 
 	let { node }: { node: ASTNode } = $props();
 
@@ -19,6 +24,42 @@
 		context: { icon: '🎯', color: '#38bdf8', label: 'Context' },
 		completion: { icon: '✨', color: '#f472b6', label: 'Completion' },
 	};
+
+	// Mermaid initialization
+	mermaid.initialize({
+		startOnLoad: false,
+		theme: 'dark',
+		securityLevel: 'loose',
+		fontFamily: 'inherit'
+	});
+
+	let diagramContainer = $state<HTMLElement | null>(null);
+	let diagramSvg = $state('');
+
+	$effect(() => {
+		if (node.type === 'diagram' && node.content) {
+			const id = `mermaid-${Math.random().toString(36).slice(2, 9)}`;
+			mermaid.render(id, node.content).then(({ svg }) => {
+				diagramSvg = svg;
+			}).catch(err => {
+				console.error('Mermaid render error:', err);
+				diagramSvg = `<div class="diagram-error">Invalid Diagram Syntax</div>`;
+			});
+		}
+	});
+
+	// KaTeX rendering helper
+	function renderMath(tex: string, displayMode: boolean = false) {
+		try {
+			return katex.renderToString(tex, {
+				displayMode,
+				throwOnError: false,
+				strict: false
+			});
+		} catch (e) {
+			return `<span class="math-error">${tex}</span>`;
+		}
+	}
 </script>
 
 {#if node.type === 'document'}
@@ -95,6 +136,17 @@
 		{/each}
 	</svelte:element>
 
+{:else if node.type === 'ref'}
+	<a href={`#${node.attributes.to}`} class="sdox-ref" onclick={(e) => {
+		const el = document.getElementById(String(node.attributes.to));
+		if (el) {
+			e.preventDefault();
+			el.scrollIntoView({ behavior: 'smooth' });
+		}
+	}}>
+		<span class="ref-icon">⚓</span> {node.content || node.attributes.to}
+	</a>
+
 {:else if node.type === 'url'}
 	<a href={node.attributes.href} target={node.attributes.target || '_blank'} class="sdox-url" title={node.attributes.title || ''}>
 		{node.content}<svg class="link-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -105,6 +157,31 @@
 		<div class="img-frame"><img src={node.attributes.src} alt={node.attributes.alt || ''} width={node.attributes.width} height={node.attributes.height} /></div>
 		{#if node.attributes.alt}<figcaption>{node.attributes.alt}</figcaption>{/if}
 	</figure>
+
+{:else if node.type === 'video'}
+	<div class="sdox-video-player">
+		<div class="player-header"><span class="player-icon">🎬</span> {node.attributes.src.split('/').pop()}</div>
+		<video
+			src={node.attributes.src}
+			controls={node.attributes.controls !== false}
+			class="sdox-video"
+		>
+			<track kind="captions" />
+			Your browser does not support the video tag.
+		</video>
+	</div>
+
+{:else if node.type === 'audio'}
+	<div class="sdox-audio-player">
+		<div class="player-header"><span class="player-icon">🎵</span> Audio Track</div>
+		<audio
+			src={node.attributes.src}
+			controls={node.attributes.controls !== false}
+			class="sdox-audio"
+		>
+			Your browser does not support the audio tag.
+		</audio>
+	</div>
 
 {:else if node.type === 'code'}
 	<div class="sdox-code-wrap"><CodeBlock code={node.content || ''} language={String(node.attributes.language || 'text')} title={node.attributes.title ? String(node.attributes.title) : undefined} showLineNumbers={node.attributes.line_number === true} /></div>
@@ -190,6 +267,130 @@
 			<div class="metadata-grid">{#each node.children as child}
 				{#if child.type === 'item'}<div class="meta-row"><div class="meta-key">{child.attributes.key}</div><div class="meta-val">{child.content}</div></div>{/if}
 			{/each}</div>
+		</div>
+	</div>
+
+{:else if node.type === 'chart'}
+	<div class="sdox-chart-card">
+		{#if node.attributes.title}<div class="chart-header">{node.attributes.title}</div>{/if}
+		<div class="chart-visual">
+			<div class="chart-bars">
+				{#each node.children.filter(c => c.type === 'data') as data}
+					<div class="chart-bar-group">
+						<div class="chart-bar" style="height: {Math.min((Number(data.attributes.value) / 2), 100)}px; background: {data.attributes.color || 'var(--color-accent-primary)'}"></div>
+						<div class="chart-label">{data.attributes.label}</div>
+					</div>
+				{/each}
+			</div>
+		</div>
+		<div class="chart-type-tag">{node.attributes.type || 'bar'} chart</div>
+	</div>
+
+{:else if node.type === 'html'}
+	<div class="sdox-html-render">
+		{@html node.content}
+	</div>
+
+{:else if node.type === 'markdown'}
+	<div class="sdox-markdown-render">
+		{@html marked.parse(node.content || '')}
+	</div>
+
+{:else if node.type === 'math'}
+	<div class="sdox-math-block" class:is-inline={node.attributes.display === 'inline'}>
+		{@html renderMath(node.content || '', node.attributes.display !== 'inline')}
+	</div>
+
+{:else if node.type === 'diagram'}
+	<div class="sdox-diagram-block">
+		<div class="diagram-header">Diagram: {node.attributes.type || 'flowchart'}</div>
+		<div class="diagram-render-wrap">
+			{#if diagramSvg}
+				{@html diagramSvg}
+			{:else}
+				<pre class="diagram-content">{node.content}</pre>
+			{/if}
+		</div>
+	</div>
+
+{:else if node.type === 'timeline'}
+	<div class="sdox-timeline" class:is-horizontal={node.attributes.orientation === 'horizontal'}>
+		{#each node.children as child}<SdoxRenderer node={child} />{/each}
+	</div>
+{:else if node.type === 'event'}
+	<div class="timeline-event">
+		<div class="event-dot"></div>
+		<div class="event-meta">
+			<span class="event-date">{node.attributes.date}</span>
+			{#if node.attributes.title}<span class="event-title">{node.attributes.title}</span>{/if}
+		</div>
+		<div class="event-body">{#if node.children.length > 0}{#each node.children as child}<SdoxRenderer node={child} />{/each}{:else}{node.content}{/if}</div>
+	</div>
+
+{:else if node.type === 'toc'}
+	<div class="sdox-toc-preview">
+		<div class="toc-header">Table of Contents</div>
+		<div class="toc-placeholder">[Generated Document Outline]</div>
+	</div>
+
+{:else if node.type === 'grid'}
+	<div class="sdox-grid" style="grid-template-columns: repeat({node.attributes.columns || 2}, 1fr);">
+		{#each node.children as child}<SdoxRenderer node={child} />{/each}
+	</div>
+{:else if node.type === 'column'}
+	<div class="sdox-column">
+		{#each node.children as child}<SdoxRenderer node={child} />{/each}
+	</div>
+
+{:else if node.type === 'badge'}
+	<span class={`sdox-badge badge-${node.attributes.type || 'info'}`}>{node.content}</span>
+
+{:else if node.type === 'term'}
+	<span class="sdox-term" id={node.attributes.id}>{node.content}</span>
+{:else if node.type === 'definition'}
+	<div class="sdox-definition">
+		<span class="def-label">Definition:</span>
+		<div class="def-body">{#if node.children.length > 0}{#each node.children as child}<SdoxRenderer node={child} />{/each}{:else}{node.content}{/if}</div>
+	</div>
+
+{:else if node.type === 'changelog'}
+	<div class="sdox-changelog">
+		<div class="changelog-header">Update Log</div>
+		<div class="changelog-content">{#each node.children as child}<SdoxRenderer node={child} />{/each}</div>
+	</div>
+
+{:else if node.type === 'item'}
+	<div class="sdox-standalone-item">
+		<span class="standalone-badge">Standalone Item</span>
+		<div class="item-content">
+			<span class="bullet">•</span>
+			<span class="text">{#if node.children.length > 0}{#each node.children as child}<SdoxRenderer node={child} />{/each}{:else}{node.content}{/if}</span>
+		</div>
+	</div>
+
+{:else if node.type === 'data'}
+	<div class="sdox-standalone-data">
+		<span class="standalone-badge">Standalone Data</span>
+		<div class="data-bar-wrap">
+			<div class="data-label">{node.attributes.label}</div>
+			<div class="data-bar-bg"><div class="data-bar-fill" style="width: {Math.min(Number(node.attributes.value), 100)}%; background: {node.attributes.color || 'var(--color-accent-primary)'}"></div></div>
+			<div class="data-value">{node.attributes.value}</div>
+		</div>
+	</div>
+
+{:else if node.type === 'column'}
+	<div class="sdox-standalone-column">
+		<span class="standalone-badge">Standalone Column</span>
+		<div class="column-content">{#each node.children as child}<SdoxRenderer node={child} />{/each}</div>
+	</div>
+
+{:else if node.type === 'event'}
+	<div class="sdox-standalone-event">
+		<span class="standalone-badge">Standalone Event</span>
+		<div class="event-card">
+			<div class="event-date">{node.attributes.date}</div>
+			<div class="event-title">{node.attributes.title || 'Untitled Event'}</div>
+			<div class="event-body">{#if node.children.length > 0}{#each node.children as child}<SdoxRenderer node={child} />{/each}{:else}{node.content}{/if}</div>
 		</div>
 	</div>
 
@@ -512,6 +713,32 @@
 		font-size: var(--text-sm);
 		color: var(--color-text-tertiary);
 		text-align: center;
+	}
+
+	.sdox-video-player, .sdox-audio-player {
+		margin: var(--space-6) 0;
+		background: #0f172a;
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-border);
+		overflow: hidden;
+		box-shadow: var(--shadow-lg);
+	}
+	.player-header {
+		padding: var(--space-3) var(--space-4);
+		background: rgba(255,255,255,0.05);
+		font-size: var(--text-xs);
+		font-family: var(--font-mono);
+		color: var(--color-text-tertiary);
+		border-bottom: 1px solid var(--color-border);
+	}
+	.player-icon { margin-right: var(--space-2); }
+	.sdox-video { width: 100%; display: block; max-height: 400px; }
+	.sdox-audio { width: 100%; padding: var(--space-2); display: block; filter: invert(0.9) hue-rotate(180deg); }
+
+	/* Custom style overrides for media players (limited to browser defaults but styled container) */
+	.sdox-audio::-webkit-media-controls-enclosure {
+		background-color: #fff;
+		border-radius: var(--radius-md);
 	}
 
 	/* --- Code & Output --- */
@@ -868,6 +1095,361 @@
 		font-size: var(--text-sm);
 		color: var(--color-text-primary);
 	}
+
+	/* --- v0.2.0 Visualization --- */
+	.sdox-chart-card {
+		margin: var(--space-6) 0;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		position: relative;
+	}
+	.chart-header {
+		font-weight: 700;
+		font-size: var(--text-lg);
+		margin-bottom: var(--space-6);
+		color: var(--color-text-primary);
+		text-align: center;
+	}
+	.chart-visual {
+		height: 150px;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		padding-bottom: var(--space-8);
+		border-bottom: 1px solid var(--color-border);
+	}
+	.chart-bars {
+		display: flex;
+		align-items: flex-end;
+		gap: var(--space-4);
+		height: 100%;
+	}
+	.chart-bar-group {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2);
+		width: 40px;
+	}
+	.chart-bar {
+		width: 100%;
+		border-radius: 4px 4px 0 0;
+		min-height: 4px;
+		transition: height 1s ease-out;
+		background: var(--color-accent-gradient);
+	}
+	.chart-label {
+		font-size: 10px;
+		color: var(--color-text-tertiary);
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.chart-type-tag {
+		position: absolute;
+		top: var(--space-4);
+		right: var(--space-4);
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		color: var(--color-text-tertiary);
+		background: rgba(255,255,255,0.05);
+		padding: 2px 8px;
+		border-radius: 4px;
+	}
+
+	/* --- v0.2.0 Mathematics --- */
+	.sdox-math-block {
+		margin: var(--space-6) 0;
+		padding: var(--space-6);
+		background: rgba(16, 185, 129, 0.05);
+		border-radius: var(--radius-lg);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		text-align: center;
+		color: #10b981;
+		font-family: 'Times New Roman', serif;
+		font-size: 1.4em;
+		font-style: italic;
+	}
+	.sdox-math-block.is-inline {
+		display: inline-block;
+		margin: 0 4px;
+		padding: 2px 8px;
+		font-size: 1.1em;
+	}
+
+	/* --- v0.2.0 Diagrams --- */
+	.sdox-diagram-block {
+		margin: var(--space-6) 0;
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-border);
+		background: #0f172a;
+		overflow: hidden;
+	}
+	.diagram-header {
+		padding: var(--space-2) var(--space-4);
+		background: rgba(255,255,255,0.05);
+		border-bottom: 1px solid var(--color-border);
+		font-size: 10px;
+		text-transform: uppercase;
+		font-weight: 700;
+		color: var(--color-text-tertiary);
+	}
+	.diagram-content {
+		margin: 0;
+		padding: var(--space-6);
+		color: #94a3b8;
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		line-height: 1.6;
+		text-align: center;
+	}
+	.diagram-render-wrap {
+		padding: var(--space-6);
+		display: flex;
+		justify-content: center;
+		background: #0f172a;
+	}
+	.diagram-render-wrap :global(svg) {
+		max-width: 100%;
+		height: auto;
+	}
+	.diagram-error {
+		color: var(--color-danger);
+		font-size: var(--text-xs);
+		font-family: var(--font-mono);
+	}
+
+	.sdox-html-render, .sdox-markdown-render {
+		margin: var(--space-4) 0;
+		padding: var(--space-4);
+		background: rgba(255,255,255,0.02);
+		border-radius: var(--radius-md);
+		border: 1px dashed var(--color-border);
+	}
+
+	.sdox-markdown-render :global(h1), 
+	.sdox-markdown-render :global(h2), 
+	.sdox-markdown-render :global(h3) {
+		color: var(--color-text-primary);
+		margin-top: var(--space-4);
+		margin-bottom: var(--space-2);
+	}
+	.sdox-markdown-render :global(p) {
+		margin-bottom: var(--space-3);
+	}
+	.sdox-markdown-render :global(code) {
+		background: var(--color-bg-code);
+		padding: 2px 4px;
+		border-radius: 4px;
+		font-family: var(--font-mono);
+	}
+
+	/* --- v0.2.0 Timeline --- */
+	.sdox-timeline {
+		margin: var(--space-8) 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-8);
+		border-left: 2px solid var(--color-border);
+		padding-left: var(--space-8);
+		position: relative;
+	}
+	.sdox-timeline.is-horizontal {
+		flex-direction: row;
+		border-left: none;
+		border-top: 2px solid var(--color-border);
+		padding-left: 0;
+		padding-top: var(--space-8);
+	}
+	.timeline-event {
+		position: relative;
+	}
+	.event-dot {
+		position: absolute;
+		left: calc(-1 * var(--space-8) - 5px);
+		top: 6px;
+		width: 10px;
+		height: 10px;
+		background: var(--color-accent-primary);
+		border-radius: 50%;
+		box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+	}
+	.is-horizontal .event-dot {
+		left: 6px;
+		top: calc(-1 * var(--space-8) - 5px);
+	}
+	.event-meta {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: var(--space-2);
+	}
+	.event-date {
+		font-size: 10px;
+		font-weight: 800;
+		color: var(--color-accent-secondary);
+		text-transform: uppercase;
+	}
+	.event-title {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		color: var(--color-text-primary);
+	}
+	.event-body {
+		color: var(--color-text-secondary);
+		font-size: var(--text-sm);
+	}
+
+	/* --- v0.2.0 Navigation & Layout --- */
+	.sdox-toc-preview {
+		padding: var(--space-6);
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+	}
+	.toc-header {
+		font-weight: 700;
+		margin-bottom: var(--space-4);
+		color: var(--color-text-primary);
+		text-transform: uppercase;
+		font-size: var(--text-sm);
+		letter-spacing: 1px;
+	}
+	.toc-placeholder {
+		color: var(--color-text-tertiary);
+		font-style: italic;
+		font-size: var(--text-sm);
+	}
+	.sdox-grid {
+		display: grid;
+		gap: var(--space-6);
+		margin: var(--space-6) 0;
+	}
+	.sdox-column {
+		border: 1px dashed rgba(255,255,255,0.05);
+		border-radius: var(--radius-md);
+		padding: var(--space-2);
+		transition: border-color 0.2s;
+	}
+	.sdox-column:hover {
+		border-color: rgba(56, 189, 248, 0.2);
+	}
+	.sdox-badge {
+		display: inline-block;
+		padding: 2px 10px;
+		border-radius: var(--radius-full);
+		font-size: 10px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.badge-info { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
+	.badge-success { background: rgba(52, 211, 153, 0.1); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
+	.badge-warning { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
+	.badge-danger { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+
+	/* --- v0.2.0 Documentation --- */
+	.sdox-term {
+		font-weight: 700;
+		color: var(--color-accent-primary);
+		border-bottom: 1px dashed var(--color-accent-primary);
+		cursor: help;
+	}
+	.sdox-definition {
+		margin: var(--space-4) 0;
+		padding: var(--space-4);
+		background: rgba(255,255,255,0.02);
+		border-radius: var(--radius-md);
+		border-left: 2px solid var(--color-accent-secondary);
+	}
+	.def-label {
+		font-size: 10px;
+		font-weight: 800;
+		color: var(--color-text-tertiary);
+		text-transform: uppercase;
+		margin-bottom: var(--space-2);
+		display: block;
+	}
+	.sdox-changelog {
+		margin: var(--space-8) 0;
+		background: #111;
+		border: 1px solid #333;
+		border-radius: var(--radius-lg);
+		padding: var(--space-6);
+	}
+	.changelog-header {
+		font-weight: 800;
+		color: #fff;
+		margin-bottom: var(--space-6);
+		padding-bottom: var(--space-4);
+		border-bottom: 1px solid #333;
+		text-transform: uppercase;
+	}
+
+	/* --- v0.2.0 Standalone Handlers --- */
+	.standalone-badge {
+		font-size: 8px;
+		font-weight: 800;
+		color: var(--color-text-tertiary);
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		background: rgba(255,255,255,0.05);
+		padding: 1px 6px;
+		border-radius: 3px;
+		margin-bottom: var(--space-2);
+		display: inline-block;
+	}
+
+	.sdox-standalone-item {
+		padding: var(--space-3);
+		border: 1px dashed var(--color-border);
+		border-radius: var(--radius-md);
+	}
+	.sdox-standalone-item .item-content { display: flex; gap: var(--space-2); align-items: flex-start; }
+	.sdox-standalone-item .bullet { color: var(--color-accent-primary); }
+
+	.sdox-standalone-data {
+		padding: var(--space-4);
+		background: rgba(255,255,255,0.02);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-border);
+	}
+	.data-bar-wrap { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-2); }
+	.data-label { font-size: var(--text-xs); font-weight: 600; width: 80px; }
+	.data-bar-bg { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+	.data-bar-fill { height: 100%; border-radius: 4px; }
+	.data-value { font-family: var(--font-mono); font-size: var(--text-sm); width: 40px; text-align: right; }
+
+	.sdox-standalone-column {
+		border: 2px dashed rgba(56, 189, 248, 0.2);
+		padding: var(--space-4);
+		border-radius: var(--radius-lg);
+	}
+
+	.sdox-standalone-event {
+		max-width: 300px;
+	}
+	.event-card {
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border);
+		padding: var(--space-4);
+		border-radius: var(--radius-lg);
+		border-left: 3px solid var(--color-accent-primary);
+	}
+
+	.sdox-ref {
+		color: var(--color-accent-primary);
+		text-decoration: none;
+		font-weight: 600;
+		border-bottom: 1px solid transparent;
+		transition: all 0.2s;
+	}
+	.sdox-ref:hover {
+		border-bottom-color: var(--color-accent-primary);
+		opacity: 0.8;
+	}
+	.ref-icon { font-size: 0.8em; opacity: 0.6; }
 
 	/* --- Unknown / Fallback --- */
 	.sdox-unknown {

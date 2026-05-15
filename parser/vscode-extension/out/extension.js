@@ -1,4 +1,13 @@
 "use strict";
+/**
+ * SDOX Tool — VS Code Extension Entry Point
+ *
+ * Registers:
+ * - Syntax highlighting (via TextMate grammar in package.json)
+ * - IntelliSense completion provider
+ * - Hover documentation provider
+ * - Live Preview commands
+ */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -37,16 +46,21 @@ exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const CompletionProvider_1 = require("./providers/CompletionProvider");
+const HoverProvider_1 = require("./providers/HoverProvider");
 const PreviewPanel_1 = require("./preview/PreviewPanel");
 function activate(context) {
-    console.log('SDOX Tool extension is now active');
+    console.log('SDOX Tool extension activated');
+    const sdoxSelector = { language: 'sdox' };
     // Register IntelliSense Completion Provider
-    const completionProvider = new CompletionProvider_1.SdoxCompletionProvider(context);
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ language: 'sdox' }, completionProvider, '#', '(', ',' // Trigger characters
-    ));
-    // Register Command to Open Live Preview
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(sdoxSelector, new CompletionProvider_1.SdoxCompletionProvider(), '#', '(', ',', '='));
+    // Register Hover Provider
+    context.subscriptions.push(vscode.languages.registerHoverProvider(sdoxSelector, new HoverProvider_1.SdoxHoverProvider()));
+    // Register Preview Commands
     context.subscriptions.push(vscode.commands.registerCommand('sdox.showPreview', () => {
-        PreviewPanel_1.PreviewPanel.createOrShow(context.extensionUri);
+        PreviewPanel_1.PreviewPanel.createOrShow(context.extensionUri, false);
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('sdox.showPreviewToSide', () => {
+        PreviewPanel_1.PreviewPanel.createOrShow(context.extensionUri, true);
     }));
 }
 function deactivate() { }

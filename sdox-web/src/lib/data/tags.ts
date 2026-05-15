@@ -242,7 +242,7 @@ export const tagCategories: TagCategory[] = [
 			},
 			{
 				name: 'item',
-				description: 'A single list item. Supports checked state for checklists.',
+				description: 'A single list item. Supports standalone rendering as a bullet point.',
 				attributes: [
 					{
 						name: 'done',
@@ -302,34 +302,30 @@ export const tagCategories: TagCategory[] = [
 				name: 'image',
 				description: 'An image element with accessible alt text and optional dimensions.',
 				attributes: [
-					{
-						name: 'src',
-						type: 'string',
-						required: true,
-						description: 'Image source path or URL.'
-					},
-					{
-						name: 'alt',
-						type: 'string',
-						required: true,
-						description: 'Alternative text for accessibility.'
-					},
-					{
-						name: 'width',
-						type: 'number',
-						description: 'Display width in pixels.'
-					},
-					{
-						name: 'height',
-						type: 'number',
-						description: 'Display height in pixels.'
-					}
+					{ name: 'src', type: 'string', required: true, description: 'Image source path or URL.' },
+					{ name: 'alt', type: 'string', required: true, description: 'Alternative text.' },
+					{ name: 'width', type: 'number', description: 'Display width.' },
+					{ name: 'height', type: 'number', description: 'Display height.' }
 				],
-				examples: [
-					{
-						code: '#image(\n  src="cover.png",\n  alt="Cover Image",\n  width=500\n)'
-					}
-				]
+				examples: [{ code: '#image(src="cover.png", alt="Cover")' }]
+			},
+			{
+				name: 'video',
+				description: 'Embed a video player with control options.',
+				attributes: [
+					{ name: 'src', type: 'string', required: true, description: 'Video source URL.' },
+					{ name: 'controls', type: 'boolean', description: 'Show playback controls.', default: 'true' }
+				],
+				examples: [{ code: '#video(src="demo.mp4", controls=true)' }]
+			},
+			{
+				name: 'audio',
+				description: 'Embed an audio player.',
+				attributes: [
+					{ name: 'src', type: 'string', required: true, description: 'Audio source URL.' },
+					{ name: 'controls', type: 'boolean', description: 'Show playback controls.', default: 'true' }
+				],
+				examples: [{ code: '#audio(src="song.mp3")' }]
 			}
 		]
 	},
@@ -607,7 +603,210 @@ export const tagCategories: TagCategory[] = [
 			}
 		]
 	},
-
+	// ------------------------------------------
+	// Integration (v0.2.0)
+	// ------------------------------------------
+	{
+		id: 'integration',
+		name: 'Integration',
+		icon: '🔌',
+		color: '#ec4899',
+		description: 'Embed other languages and formats within SDOX.',
+		tags: [
+			{
+				name: 'html',
+				description: 'Render raw HTML content directly.',
+				attributes: [],
+				examples: [
+					{
+						code: '#html {\n  <div style="background: red; color: white; padding: 10px;">\n    Hello from Raw HTML!\n  </div>\n}'
+					}
+				]
+			},
+			{
+				name: 'markdown',
+				description: 'Render parsed Markdown content.',
+				attributes: [],
+				examples: [
+					{
+						code: '#markdown {\n  ### Markdown Title\n  - Item 1\n  - **Bold** text\n}'
+					}
+				]
+			}
+		]
+	},
+	// ------------------------------------------
+	// Visualization (v0.2.0)
+	// ------------------------------------------
+	{
+		id: 'visualization',
+		name: 'Visualization',
+		icon: '📊',
+		color: '#f59e0b',
+		description: 'Data-driven charts and visual representations.',
+		tags: [
+			{
+				name: 'chart',
+				description: 'A container for data visualization. Supports multiple chart types.',
+				attributes: [
+					{
+						name: 'type',
+						type: 'enum',
+						required: true,
+						description: 'Type of chart to render.',
+						values: ['bar', 'line', 'pie', 'area', 'scatter', 'radar']
+					},
+					{
+						name: 'title',
+						type: 'string',
+						description: 'Chart title.'
+					}
+				],
+				examples: [
+					{
+						code: '#chart(type="bar", title="Monthly Sales") {\n  #data(label="Jan", value=120)\n  #data(label="Feb", value=150)\n}'
+					}
+				]
+			},
+			{
+				name: 'data',
+				description: 'A single data point or series entry for charts. Supports standalone rendering as a metric bar.',
+				attributes: [
+					{ name: 'label', type: 'string', required: true, description: 'Data label.' },
+					{ name: 'value', type: 'number', required: true, description: 'Numeric value.' },
+					{ name: 'color', type: 'string', description: 'Custom color for this data point.' }
+				],
+				examples: [{ code: '#data(label="Jan", value=120)' }]
+			}
+		]
+	},
+	// ------------------------------------------
+	// Mathematics (v0.2.0)
+	// ------------------------------------------
+	{
+		id: 'mathematics',
+		name: 'Mathematics',
+		icon: '∑',
+		color: '#10b981',
+		description: 'Complex mathematical notations and formulas.',
+		tags: [
+			{
+				name: 'math',
+				description: 'Mathematical formula using LaTeX notation.',
+				attributes: [
+					{
+						name: 'display',
+						type: 'enum',
+						description: 'Rendering mode.',
+						values: ['inline', 'block'],
+						default: 'block'
+					}
+				],
+				examples: [{ code: '#math { \\int_{a}^{b} f(x) dx = F(b) - F(a) }' }]
+			}
+		]
+	},
+	// ------------------------------------------
+	// Diagrams (v0.2.0)
+	// ------------------------------------------
+	{
+		id: 'diagrams',
+		name: 'Diagrams',
+		icon: '🎨',
+		color: '#8b5cf6',
+		description: 'Structural diagrams and chronological timelines.',
+		tags: [
+			{
+				name: 'diagram',
+				description: 'General diagram container supporting Mermaid-like syntax.',
+				attributes: [
+					{
+						name: 'type',
+						type: 'enum',
+						required: true,
+						description: 'Diagram type.',
+						values: ['flowchart', 'sequence', 'gantt', 'mindmap']
+					}
+				],
+				examples: [
+					{
+						code: '#diagram(type="flowchart") {\n  graph TD;\n  A-->B;\n}'
+					}
+				]
+			},
+			{
+				name: 'timeline',
+				description: 'A vertical or horizontal timeline of events.',
+				attributes: [
+					{
+						name: 'orientation',
+						type: 'enum',
+						description: 'Timeline layout.',
+						values: ['vertical', 'horizontal'],
+						default: 'vertical'
+					}
+				],
+				examples: [
+					{
+						code: '#timeline {\n  #event(date="2024-01") Launch\n  #event(date="2024-05") Update\n}'
+					}
+				]
+			},
+			{
+				name: 'event',
+				description: 'A single event in a timeline. Supports standalone rendering as a milestone card.',
+				attributes: [
+					{ name: 'date', type: 'string', required: true, description: 'Event date/time.' },
+					{ name: 'title', type: 'string', description: 'Event title.' }
+				],
+				examples: [{ code: '#event(date="2024-01") Project Start' }]
+			}
+		]
+	},
+	// ------------------------------------------
+	// Navigation & Layout (v0.2.0)
+	// ------------------------------------------
+	{
+		id: 'navigation',
+		name: 'Navigation & Layout',
+		icon: '🧭',
+		color: '#3b82f6',
+		description: 'Tools for document navigation and structure.',
+		tags: [
+			{
+				name: 'toc',
+				description: 'Automatically generated Table of Contents.',
+				attributes: [],
+				examples: [{ code: '#toc' }]
+			},
+			{
+				name: 'grid',
+				description: 'A grid container for multi-column layouts.',
+				attributes: [
+					{ name: 'columns', type: 'number', description: 'Number of grid columns.', default: '2' }
+				],
+				examples: [
+					{
+						code: '#grid(columns=2) {\n  #column { Left }\n  #column { Right }\n}'
+					}
+				]
+			},
+			{
+				name: 'column',
+				description: 'A column within a grid layout. Supports standalone rendering as a bordered block.',
+				attributes: [
+					{ name: 'span', type: 'number', description: 'Number of columns to span.', default: '1' }
+				],
+				examples: [{ code: '#column { ... }' }]
+			},
+			{
+				name: 'ref',
+				description: 'Internal cross-reference to an element ID.',
+				attributes: [{ name: 'to', type: 'string', required: true, description: 'Target element ID.' }],
+				examples: [{ code: '#ref(to="intro")' }]
+			}
+		]
+	},
 	// ------------------------------------------
 	// AI-Native
 	// ------------------------------------------

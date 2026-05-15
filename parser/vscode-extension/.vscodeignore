@@ -1,11 +1,7 @@
 .vscode/**
 .vscode-test/**
-out/**
-node_modules/**
 src/**
 .gitignore
-bun.lockb
-bunfig.toml
 tsconfig.json
-**/*.map
-**/*.ts
+node_modules/**
+!node_modules/@types/**

@@ -1,0 +1,256 @@
+{
+  "version": "0.2.0",
+  "categories": [
+    {
+      "id": "structure",
+      "name": "Structure",
+      "icon": "📄",
+      "description": "Core building blocks for organizing document layout and hierarchy.",
+      "tags": [
+        {
+          "name": "title",
+          "description": "Defines a heading element with explicit level control.",
+          "attributes": [
+            { "name": "level", "type": "number", "required": true },
+            { "name": "id", "type": "string", "required": false }
+          ],
+          "examples": [{ "code": "#title(level=1) Introduction" }]
+        },
+        {
+          "name": "paragraph",
+          "description": "A block of body text.",
+          "attributes": [],
+          "examples": [{ "code": "#paragraph { ... }" }]
+        },
+        {
+          "name": "section",
+          "description": "Groups related content under a named section.",
+          "attributes": [
+            { "name": "title", "type": "string", "required": false },
+            { "name": "id", "type": "string", "required": false }
+          ],
+          "examples": [{ "code": "#section(title=\"Auth\") { ... }" }]
+        },
+        { "name": "divider", "description": "A horizontal rule.", "attributes": [], "examples": [{ "code": "#divider" }] }
+      ]
+    },
+    {
+      "id": "text-semantics",
+      "name": "Text & Semantics",
+      "icon": "✏️",
+      "description": "Semantic text elements for rich, meaningful content.",
+      "tags": [
+        {
+          "name": "text",
+          "description": "Inline styled text.",
+          "attributes": [
+            { "name": "style", "type": "enum", "values": ["bold", "italic", "strikethrough", "underline"] },
+            { "name": "color", "type": "string" },
+            { "name": "size", "type": "string" }
+          ],
+          "examples": [{ "code": "#text(style=\"bold\") Important" }]
+        },
+        {
+          "name": "quote",
+          "description": "A blockquote.",
+          "attributes": [{ "name": "author", "type": "string" }],
+          "examples": [{ "code": "#quote(author=\"Alan\") { ... }" }]
+        },
+        {
+          "name": "note",
+          "description": "A callout box.",
+          "attributes": [{ "name": "type", "type": "enum", "values": ["info", "warning", "danger", "success"], "required": true }],
+          "examples": [{ "code": "#note(type=\"warning\") { ... }" }]
+        }
+      ]
+    },
+    {
+      "id": "visualization",
+      "name": "Visualization",
+      "icon": "📊",
+      "description": "Data-driven charts and visual representations.",
+      "tags": [
+        {
+          "name": "chart",
+          "description": "A container for data charts.",
+          "attributes": [
+            { "name": "type", "type": "enum", "values": ["bar", "line", "pie", "area", "scatter", "radar"], "required": true },
+            { "name": "title", "type": "string" },
+            { "name": "legend", "type": "boolean", "default": true },
+            { "name": "stacked", "type": "boolean", "default": false }
+          ],
+          "examples": [{ "code": "#chart(type=\"bar\", title=\"Sales\") { #data(label=\"Jan\", value=100) }" }]
+        },
+        {
+          "name": "data",
+          "description": "A single data point or series entry. Can be used standalone to show a progress-like bar.",
+          "attributes": [
+            { "name": "label", "type": "string", "required": true },
+            { "name": "value", "type": "number", "required": true },
+            { "name": "color", "type": "string" },
+            { "name": "group", "type": "string" }
+          ],
+          "examples": [{ "code": "#data(label=\"Jan\", value=120)" }]
+        }
+      ]
+    },
+    {
+      "id": "mathematics",
+      "name": "Mathematics",
+      "icon": "∑",
+      "description": "Complex mathematical notations and formulas.",
+      "tags": [
+        {
+          "name": "math",
+          "description": "Mathematical formula using LaTeX notation.",
+          "attributes": [
+            { "name": "display", "type": "enum", "values": ["inline", "block"], "default": "block" },
+            { "name": "id", "type": "string" }
+          ],
+          "examples": [{ "code": "#math { \\int_{a}^{b} f(x) dx }" }]
+        }
+      ]
+    },
+    {
+      "id": "diagrams",
+      "name": "Diagrams",
+      "icon": "🎨",
+      "description": "Structural diagrams and chronological timelines.",
+      "tags": [
+        {
+          "name": "diagram",
+          "description": "General diagram container (e.g., Mermaid).",
+          "attributes": [
+            { "name": "type", "type": "enum", "values": ["flowchart", "sequence", "gantt", "mindmap"], "required": true },
+            { "name": "title", "type": "string" }
+          ],
+          "examples": [{ "code": "#diagram(type=\"flowchart\") { graph TD; A-->B; }" }]
+        },
+        {
+          "name": "timeline",
+          "description": "A vertical or horizontal timeline of events.",
+          "attributes": [
+            { "name": "title", "type": "string" },
+            { "name": "orientation", "type": "enum", "values": ["vertical", "horizontal"], "default": "vertical" }
+          ],
+          "examples": [{ "code": "#timeline { #event(date=\"2024-01\") Started }" }]
+        },
+        {
+          "name": "event",
+          "description": "A single event in a timeline. Can be used standalone as a mini milestone card.",
+          "attributes": [
+            { "name": "date", "type": "string", "required": true },
+            { "name": "title", "type": "string" },
+            { "name": "icon", "type": "string" }
+          ],
+          "examples": [{ "code": "#event(date=\"2024-01\") Milestone A" }]
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "name": "Navigation & Referencing",
+      "icon": "🧭",
+      "description": "Tools for document navigation and internal referencing.",
+      "tags": [
+        { "name": "toc", "description": "Automatically generated Table of Contents.", "attributes": [], "examples": [{ "code": "#toc" }] },
+        {
+          "name": "ref",
+          "description": "Internal cross-reference to an element ID.",
+          "attributes": [{ "name": "to", "type": "string", "required": true }],
+          "examples": [{ "code": "#ref(to=\"eq-1\")" }]
+        },
+        { "name": "footnote", "description": "A footnote reference and content.", "attributes": [{ "name": "id", "type": "string" }], "examples": [{ "code": "#footnote { Extra info }" }] }
+      ]
+    },
+    {
+      "id": "layout",
+      "name": "Layout",
+      "icon": "📐",
+      "description": "Advanced structural layout elements.",
+      "tags": [
+        {
+          "name": "grid",
+          "description": "A grid container for multi-column layouts.",
+          "attributes": [{ "name": "columns", "type": "number", "default": 2 }],
+          "examples": [{ "code": "#grid(columns=2) { #column { ... } }" }]
+        },
+        { "name": "column", "description": "A column within a grid layout. Can be used standalone to define a content area.", "attributes": [{ "name": "span", "type": "number", "default": 1 }], "examples": [{ "code": "#column { ... }" }] }
+      ]
+    },
+    {
+      "id": "media-ui",
+      "name": "Media & UI",
+      "icon": "📺",
+      "description": "Rich media embedding and UI components.",
+      "tags": [
+        {
+          "name": "video",
+          "description": "Embed a video player.",
+          "attributes": [
+            { "name": "src", "type": "string", "required": true },
+            { "name": "type", "type": "enum", "values": ["local", "youtube", "vimeo"], "default": "local" },
+            { "name": "controls", "type": "boolean", "default": true }
+          ],
+          "examples": [{ "code": "#video(src=\"...\")" }]
+        },
+        {
+          "name": "audio",
+          "description": "Embed an audio player.",
+          "attributes": [
+            { "name": "src", "type": "string", "required": true },
+            { "name": "controls", "type": "boolean", "default": true }
+          ],
+          "examples": [{ "code": "#audio(src=\"...\")" }]
+        },
+        {
+          "name": "badge",
+          "description": "A small status or category badge.",
+          "attributes": [{ "name": "type", "type": "enum", "values": ["info", "success", "warning", "danger"], "default": "info" }],
+          "examples": [{ "code": "#badge(type=\"success\") Stable" }]
+        }
+      ]
+    },
+    {
+      "id": "integration",
+      "name": "Integration",
+      "icon": "🔌",
+      "description": "Embed other languages and formats within SDOX.",
+      "tags": [
+        {
+          "name": "html",
+          "description": "Render raw HTML content.",
+          "attributes": [],
+          "examples": [{ "code": "#html { <div>Hello</div> }" }]
+        },
+        {
+          "name": "markdown",
+          "description": "Render parsed Markdown content.",
+          "attributes": [],
+          "examples": [{ "code": "#markdown { **Bold** text }" }]
+        }
+      ]
+    },
+    {
+      "id": "documentation",
+      "name": "Documentation",
+      "icon": "📚",
+      "description": "Features for technical and software documentation.",
+      "tags": [
+        {
+          "name": "term",
+          "description": "Defines a technical term for the glossary.",
+          "attributes": [{ "name": "id", "type": "string", "required": true }],
+          "examples": [{ "code": "#term(id=\"sdox\") SDOX" }]
+        },
+        {
+          "name": "definition",
+          "description": "The definition for a technical term.",
+          "attributes": [{ "name": "for", "type": "string", "required": true }],
+          "examples": [{ "code": "#definition(for=\"sdox\") Scalable Document" }]
+        },
+        { "name": "changelog", "description": "A section for version history logs.", "attributes": [], "examples": [{ "code": "#changelog { ... }" }] }
+      ]
+    }
+  ]
+}

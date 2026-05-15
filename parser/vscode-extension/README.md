@@ -1,26 +1,94 @@
-# SDOX Tool (VS Code Extension)
+# SDOX Tool — VS Code Extension
 
-Professional language support for **Scalable Document (SDOX)** in Visual Studio Code.
+**Syntax highlighting, IntelliSense, and Live Preview** for [Scalable Document (SDOX)](https://github.com/firzaelbuho/scalable-document-sdox) — a structured, semantic, AI-friendly document language.
 
 ## Features
 
-- **Syntax Highlighting**: Full colorization for SDOX tags, attributes, and code blocks.
-- **IntelliSense**: Autocompletion for all 31+ SDOX tags and their valid attributes.
-- **Live Preview**: Instantly render your SDOX documents to HTML inside VS Code.
+### 🎨 Syntax Highlighting
+
+Rich, category-aware colorization for all SDOX tags:
+
+- **Structure** — `#title`, `#paragraph`, `#section`, `#divider`
+- **Text & Semantics** — `#text`, `#quote`, `#note`
+- **Lists** — `#list`, `#item`
+- **Links & Media** — `#url`, `#image`
+- **Code** — `#code`, `#output`
+- **Tables** — `#table`, `#row`, `#cell`
+- **Components** — `#card`, `#tab`, `#accordion`
+- **Modularization** — `#include`, `#template`, `#use`
+- **AI-Native** — `#metadata`, `#dataset`, `#instruction`, `#response`, `#example`, `#embedding`, `#chunk`, `#context`, `#completion`
+
+### 🧠 IntelliSense
+
+Smart auto-completion powered by the SDOX v0.1.0 tag schema:
+
+- Type `#` to see all available tags with descriptions
+- Type `(` after a tag to get attribute suggestions
+- Type `=` to get enum and boolean value options
+- Snippets with smart tabstops for quick tag insertion
+
+### 📖 Hover Documentation
+
+Hover over any `#tag` to see:
+
+- Full description
+- Attributes table (name, type, required, description)
+- Code example
+
+### 👁️ Live Preview
+
+Side-by-side rendered preview of your SDOX documents:
+
+- Click the **preview icon** in the editor title bar
+- Or use keyboard shortcuts:
+  - `Ctrl+Shift+V` — Open preview
+  - `Ctrl+K V` — Open preview to the side
+- Real-time updates as you type (300ms debounce)
+- Premium dark theme with semantic styling
 
 ## Usage
 
-1. Open any `.sdox` file.
-2. Type `#` to see a list of available tags.
-3. Open the **Command Palette** (`Ctrl+Shift+P` / `Cmd+Shift+P`) and type `SDOX: Open Live Preview` to open the preview pane. Alternatively, click the preview icon in the editor title menu.
+1. Create or open a `.sdox` file
+2. Start typing `#` to get IntelliSense suggestions
+3. Click the preview button (or `Ctrl+K V`) to see the live preview
 
-## Development
+### Example SDOX Document
 
-To work on this extension:
+```sdox
+#title(level=1) Hello SDOX
 
-1. Open `parser/vscode-extension` in VS Code.
-2. Run `bun install`
-3. Press `F5` to open a new window with the extension loaded.
+#paragraph {
+  Scalable Document is a structured, semantic,
+  AI-friendly document language.
+}
 
----
-**SDOX** — *Everything is a semantic tag.*
+#code(language="python") {
+  print("hello, sdox!")
+}
+
+#note(type="info") {
+  SDOX supports all common text encodings.
+}
+```
+
+## Supported File Extensions
+
+- `.sdox`
+
+## Requirements
+
+- VS Code 1.80.0 or higher
+
+## Release Notes
+
+### 0.1.0
+
+- Initial release
+- Syntax highlighting for all SDOX v0.1.0 tags
+- IntelliSense with tag, attribute, and value completions
+- Hover documentation
+- Live Preview panel
+
+## License
+
+MIT

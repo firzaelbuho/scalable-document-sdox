@@ -2,7 +2,7 @@
 
 ## Initial Specification Draft
 
-Version: `0.1.0`
+Version: `0.2.0`
 Status: Draft
 
 ---
@@ -638,6 +638,81 @@ Attributes:
 
 ---
 
+# Visualization Tags
+
+## chart
+
+```xldm
+#chart(type="bar", title="Monthly Sales") {
+  #data(label="Jan", value=100)
+}
+```
+
+---
+
+# Mathematics Tags
+
+## math
+
+```xldm
+#math {
+  \int_{a}^{b} f(x) dx
+}
+```
+
+---
+
+# Diagram Tags
+
+## diagram
+
+```xldm
+#diagram(type="flowchart") {
+  graph TD;
+    A-->B;
+}
+```
+
+## timeline
+
+```xldm
+#timeline {
+  #event(date="2024-01-01") Launch
+}
+```
+
+---
+
+# Navigation & Layout Tags
+
+## toc
+
+```xldm
+#toc
+```
+
+## grid
+
+```xldm
+#grid(columns=2) {
+  #column { ... }
+  #column { ... }
+}
+```
+
+---
+
+# Documentation Tags
+
+## term & definition
+
+```xldm
+#term(id="sdox") Scalable Document
+#definition(for="sdox") A semantic document language.
+```
+
+---
+
 # Naming Conventions
 
 ## Recommended Rules
@@ -766,7 +841,7 @@ Example:
 Recommended initial version:
 
 ```txt
-0.1.0
+0.2.0
 ```
 
 Reason:

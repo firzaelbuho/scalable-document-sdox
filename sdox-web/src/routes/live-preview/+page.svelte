@@ -2,136 +2,145 @@
 	import { parseSdox } from '$lib/utils/sdoxParser';
 	import SdoxRenderer from '$lib/components/preview/SdoxRenderer.svelte';
 
-	let sdoxInput = $state(`#title(level=1) SDOX Live Preview
+	let sdoxInput = $state(`#title(level=1, id="main-title") SDOX v0.2.0 Live Showcase
+#badge(type="success") Draft Specification
 
-#paragraph {
-  Welcome to the SDOX Live Preview!
-  Edit the text on the left to see it rendered in real time.
+#section(title="1. Structure") {
+  #paragraph { SDOX structure is defined by #text(style="bold") titles, sections, and paragraphs. }
+  #divider
+  #section(title="Sub-section Example") {
+    #paragraph { This is nested. }
+  }
 }
 
-#divider
-
-#section(title="Text & Semantics") {
-  #quote(author="Alan Turing") {
-    We can only see a short distance ahead,
-    but we can see plenty there that needs to be done.
-  }
-
-  #note(type="info") {
-    SDOX supports all common text encodings.
-  }
-
-  #note(type="warning") {
-    Never expose API keys in client-side code.
-  }
-
+#section(title="2. Text & Semantics") {
   #paragraph {
-    Here is some #text(style="bold") bold text, some #text(style="italic") italic text, and #text(style="underline") underlined text. You can even combine styles like #text(style="strikethrough", color="#f87171") strikethrough with color.
+    Styled text: #text(style="bold") Bold, #text(style="italic") Italic, #text(style="underline") Underline.
+    Colored: #text(color="#38bdf8") Blue, #text(color="#f87171") Red.
+  }
+  #quote(author="Albert Einstein") { Logic will get you from A to B. Imagination will take you everywhere. }
+  #note(type="info") { This is an informational note. }
+  #note(type="warning") { This is a warning. }
+}
+
+#section(title="3. Lists") {
+  #grid(columns=2) {
+    #column {
+      #list(type="unordered") { #item Unordered A #item Unordered B }
+    }
+    #column {
+      #list(type="checklist") { #item(done=true) Checked #item(done=false) Unchecked }
+    }
   }
 }
 
-#section(title="Lists") {
-  #list(type="ordered") {
-    #item First item
-    #item Second item
-    #item Third item
-  }
-
-  #list(type="checklist") {
-    #item(done=true) Setup project
-    #item(done=false) Write docs
-    #item(done=true) Ship v1
-  }
+#section(title="4. Links & Media") {
+  #paragraph { Visit #url(href="https://sdox-dev.vercel.app") SDOX Official. }
+  #image(src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800", alt="Tech")
+  #video(src="https://www.w3schools.com/html/mov_bbb.mp4")
+  #audio(src="https://www.w3schools.com/html/horse.mp3")
 }
 
-#section(title="Code & Output") {
-  #code(language="python", title="main.py") {
-    def greet(name):
-        return f"Hello, {name}!"
+#section(title="5. Code & Output") {
+  #code(language="python", title="script.py") {
+    def hello():
+        print("Hello from SDOX!")
   }
-
   #output(type="terminal") {
-    $ python main.py
-    Hello, SDOX!
+    $ python script.py
+    Hello from SDOX!
   }
 }
 
-#section(title="Tables") {
+#section(title="6. Components") {
   #table {
-    #row {
-      #cell(header=true) Tag
-      #cell(header=true) Category
-      #cell(header=true) Status
+    #row { #cell(header=true) Feature #cell(header=true) Status }
+    #row { #cell Parsing #cell Stable }
+    #row { #cell Rendering #cell v0.2.0 }
+  }
+  #card(title="Interactive Card") { Content inside a card component. }
+  #accordion(title="View Details") { Hidden content revealed on click. }
+}
+
+#section(title="7. Modularization") {
+  #include(src="theme.sdox")
+  #template(name="alert") { #note(type="warning") { ALERT! } }
+  #use(template="alert")
+}
+
+#section(title="8. AI-Native") {
+  #metadata { #item(key="id") 123 #item(key="model") s-1 }
+  #instruction(priority="high") { Act as a document expert. }
+  #dataset(name="train_v1") { #example { Sample text. } }
+  #response(model="claude-3") { SDOX is the future. }
+}
+
+#section(title="9. Integration (v0.2.0)") {
+  #paragraph { Embed other formats directly: }
+  #grid(columns=2) {
+    #column {
+      #title(level=4) Raw HTML
+      #html {
+        <div style="padding: 1rem; border-radius: 8px; background: linear-gradient(45deg, #f06, #4a90e2); color: white; font-weight: bold; text-align: center;">
+          Custom HTML Gradient
+        </div>
+      }
     }
-    #row {
-      #cell title
-      #cell Structure
-      #cell Stable
-    }
-    #row {
-      #cell quote
-      #cell Text
-      #cell Stable
+    #column {
+      #title(level=4) Markdown
+      #markdown {
+        ### Parsed MD
+        - Support for **bold**
+        - Support for *italic*
+        - [Links](https://sdox.dev)
+      }
     }
   }
 }
 
-#section(title="Components") {
-  #card(title="Getting Started") {
-    Install SDOX and start writing structured documents.
-  }
-
-  #accordion(title="Advanced Configuration") {
-    Custom parser options can be set in sdox.config.json
-  }
-
-  #tab(title="Linux") {
-    #code(language="bash") {
-      sudo apt install sdox
-    }
+#section(title="10. Visualization (v0.2.0)") {
+  #chart(type="bar", title="Adoption Growth") {
+    #data(label="Q1", value=30, color="#94a3b8")
+    #data(label="Q2", value=65, color="#38bdf8")
+    #data(label="Q3", value=90, color="#8b5cf6")
   }
 }
 
-#section(title="Modularization") {
-  #include(src="./authentication.sdox")
-  #template(name="api_endpoint") {
-    #code(language="bash") {
-      curl -X GET /api/resource
-    }
-  }
-  #use(template="api_endpoint")
+#section(title="11. Mathematics (v0.2.0)") {
+  #paragraph { Complex equations rendered with KaTeX: }
+  #math { \\oint_C \\mathbf{E} \\cdot d\\mathbf{l} = -\\frac{d\\Phi_B}{dt} }
+  #paragraph { Inline theory: #math(display="inline") { a^2 + b^2 = c^2 }. }
 }
 
-#section(title="AI-Native") {
-  #metadata {
-    #item(key="author") John
-    #item(key="version") 1.0
-    #item(key="status") draft
+#section(title="12. Diagrams (v0.2.0)") {
+  #diagram(type="flowchart") {
+    graph LR;
+    User-->Input;
+    Input-->Parser;
+    Parser-->AST;
+    AST-->Output;
   }
-
-  #instruction(priority="high") {
-    Always respond in JSON format.
+  #timeline {
+    #event(date="2024-05", title="v0.2.0") New visual tags.
   }
+}
 
-  #response(model="gpt-5") {
-    The analysis shows three key findings...
+#section(title="13. Navigation & Layout (v0.2.0)") {
+  #toc
+  #grid(columns=3) {
+    #column { #badge(type="info") Col 1 }
+    #column { #badge(type="success") Col 2 }
+    #column { #badge(type="warning") Col 3 }
   }
+  #paragraph { Go back to #ref(to="main-title") Start. }
+}
 
-  #dataset(name="qa_pairs") {
-    Training data for Q&A model.
-  }
-
-  #context(scope="authentication") {
-    OAuth 2.0 is the standard protocol.
-  }
-
-  #chunk(size=500) {
-    Content optimized for vector DB ingestion.
-  }
-
-  #embedding(model="text-embedding-3")
-  #completion(model="gpt-5") {
-    Continue the documentation...
+#section(title="14. Documentation (v0.2.0)") {
+  #term(id="ast") AST
+  #definition(for="ast") Abstract Syntax Tree.
+  #changelog {
+    #item(done=true) Integrated KaTeX.
+    #item(done=true) Integrated Mermaid.
   }
 }
 `);
@@ -151,14 +160,16 @@
 			.replace(/___BRACKET___/g, '<span class="sdox-bracket">')
 			.replace(/___TAG___/g, '<span class="sdox-tag">')
 			.replace(/___ATTR___/g, '<span class="sdox-attr">')
-			.replace(/___END___/g, '</span>')
-			+ (sdoxInput.endsWith('\n') ? ' ' : '') // preserve scrolling for trailing newline
+			.replace(/___END___/g, '</span>') + (sdoxInput.endsWith('\n') ? ' ' : '') // preserve scrolling for trailing newline
 	);
 </script>
 
 <svelte:head>
 	<title>Live Preview — SDOX</title>
-	<meta name="description" content="Live interactive preview for Scalable Document (SDOX) syntax." />
+	<meta
+		name="description"
+		content="Live interactive preview for Scalable Document (SDOX) syntax."
+	/>
 </svelte:head>
 
 <div class="preview-page container">
@@ -267,7 +278,8 @@
 		flex-direction: column;
 	}
 
-	.editor-textarea, .editor-highlight {
+	.editor-textarea,
+	.editor-highlight {
 		position: absolute;
 		top: 0;
 		left: 0;

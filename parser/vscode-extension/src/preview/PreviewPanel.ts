@@ -1,191 +1,146 @@
+/**
+ * SDOX Live Preview Panel
+ * 
+ * WebView panel that renders a live preview of the active SDOX document.
+ * Updates automatically when the document changes (debounced).
+ */
+
 import * as vscode from 'vscode';
-import { parseSdox } from './parser';
-import { renderSdoxToHtml } from './renderer';
+import * as path from 'path';
+import * as fs from 'fs';
+import { parseSdox } from '../sdoxParser';
+import { renderDocument } from '../sdoxRenderer';
 
 export class PreviewPanel {
-    public static currentPanel: PreviewPanel | undefined;
+    public static readonly viewType = 'sdoxPreview';
+    private static panels: Map<string, PreviewPanel> = new Map();
+
     private readonly _panel: vscode.WebviewPanel;
+    private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
+    private _debounceTimer: ReturnType<typeof setTimeout> | undefined;
+    private _documentUri: string;
 
-    public static createOrShow(extensionUri: vscode.Uri) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.ViewColumn.Beside
-            : vscode.ViewColumn.One;
-
-        if (PreviewPanel.currentPanel) {
-            PreviewPanel.currentPanel._panel.reveal(column);
-            PreviewPanel.currentPanel.update();
+    public static createOrShow(extensionUri: vscode.Uri, toSide: boolean = true): void {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document.languageId !== 'sdox') {
+            vscode.window.showWarningMessage('Open an .sdox file first to preview it.');
             return;
         }
 
+        const docUri = editor.document.uri.toString();
+        const existing = PreviewPanel.panels.get(docUri);
+        if (existing) {
+            existing._panel.reveal(toSide ? vscode.ViewColumn.Beside : vscode.ViewColumn.Active);
+            return;
+        }
+
+        const column = toSide ? vscode.ViewColumn.Beside : vscode.ViewColumn.Active;
+        const fileName = path.basename(editor.document.fileName);
+
         const panel = vscode.window.createWebviewPanel(
-            'sdoxPreview',
-            'SDOX Preview',
+            PreviewPanel.viewType,
+            `Preview: ${fileName}`,
             column,
             {
                 enableScripts: true,
+                retainContextWhenHidden: true,
+                localResourceRoots: [extensionUri]
             }
         );
 
-        PreviewPanel.currentPanel = new PreviewPanel(panel, extensionUri);
+        const previewPanel = new PreviewPanel(panel, extensionUri, docUri);
+        PreviewPanel.panels.set(docUri, previewPanel);
     }
 
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, documentUri: string) {
         this._panel = panel;
+        this._extensionUri = extensionUri;
+        this._documentUri = documentUri;
 
-        this.update();
+        this._updatePreview();
+
+        this._disposables.push(
+            vscode.workspace.onDidChangeTextDocument(e => {
+                if (e.document.uri.toString() === this._documentUri) {
+                    this._debouncedUpdate();
+                }
+            })
+        );
+
+        this._disposables.push(
+            vscode.window.onDidChangeActiveTextEditor(editor => {
+                if (editor && editor.document.languageId === 'sdox') {
+                    const newUri = editor.document.uri.toString();
+                    if (newUri !== this._documentUri) {
+                        this._documentUri = newUri;
+                        const fileName = path.basename(editor.document.fileName);
+                        this._panel.title = `Preview: ${fileName}`;
+                        this._updatePreview();
+                    }
+                }
+            })
+        );
 
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-        // Update when active editor changes
-        vscode.window.onDidChangeActiveTextEditor(
-            e => {
-                if (e && e.document.languageId === 'sdox') {
-                    this.update();
-                }
-            },
-            null,
-            this._disposables
-        );
-
-        // Update when the document changes
-        vscode.workspace.onDidChangeTextDocument(
-            e => {
-                if (vscode.window.activeTextEditor && e.document === vscode.window.activeTextEditor.document && e.document.languageId === 'sdox') {
-                    this.update();
-                }
-            },
-            null,
-            this._disposables
-        );
     }
 
-    public update() {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-
-        const document = editor.document;
-        if (document.languageId !== 'sdox') {
-            return;
-        }
-
-        const text = document.getText();
-        const ast = parseSdox(text);
-        const htmlBody = renderSdoxToHtml(ast);
-
-        this._panel.webview.html = this._getHtmlForWebview(htmlBody);
+    private _debouncedUpdate(): void {
+        if (this._debounceTimer) { clearTimeout(this._debounceTimer); }
+        this._debounceTimer = setTimeout(() => { this._updatePreview(); }, 300);
     }
 
-    private _getHtmlForWebview(body: string) {
-        return `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>SDOX Preview</title>
-                <style>
-                    body {
-                        font-family: var(--vscode-font-family);
-                        color: var(--vscode-editor-foreground);
-                        background-color: var(--vscode-editor-background);
-                        padding: 20px;
-                        line-height: 1.6;
-                    }
-                    .sdox-container {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 16px;
-                    }
-                    .section-title, .sdox-title {
-                        color: var(--vscode-editor-foreground);
-                        font-weight: 800;
-                        margin-top: 24px;
-                        margin-bottom: 8px;
-                    }
-                    .sdox-paragraph {
-                        color: var(--vscode-descriptionForeground);
-                        white-space: pre-wrap;
-                        margin: 0;
-                    }
-                    .sdox-divider {
-                        border: 0;
-                        height: 1px;
-                        background: var(--vscode-widget-border);
-                        margin: 24px 0;
-                    }
-                    .sdox-note {
-                        display: flex;
-                        gap: 12px;
-                        padding: 16px;
-                        border-radius: 8px;
-                        background: var(--vscode-textBlockQuote-background);
-                        border: 1px solid var(--vscode-textBlockQuote-border);
-                        border-left-width: 4px;
-                    }
-                    .sdox-note-warning { border-left-color: var(--vscode-editorWarning-foreground); }
-                    .sdox-note-danger { border-left-color: var(--vscode-editorError-foreground); }
-                    .sdox-note-success { border-left-color: #10b981; }
-                    .sdox-note-info { border-left-color: var(--vscode-editorInfo-foreground); }
-                    .note-icon { font-size: 1.2rem; flex-shrink: 0; }
-                    .note-content { font-size: 0.9em; }
-                    .sdox-list {
-                        padding-left: 24px;
-                        color: var(--vscode-descriptionForeground);
-                        display: flex;
-                        flex-direction: column;
-                        gap: 8px;
-                    }
-                    .sdox-list-checklist {
-                        list-style: none;
-                        padding-left: 0;
-                    }
-                    .sdox-list-item {
-                        display: flex;
-                        align-items: flex-start;
-                        gap: 8px;
-                    }
-                    .sdox-list-item input[type="checkbox"] { margin-top: 5px; }
-                    .sdox-code-wrapper {
-                        margin: 8px 0;
-                        background: var(--vscode-textCodeBlock-background);
-                        padding: 12px;
-                        border-radius: 6px;
-                    }
-                    pre { margin: 0; }
-                    code { font-family: var(--vscode-editor-font-family); }
-                    .sdox-generic-block {
-                        padding: 12px;
-                        border: 1px dashed var(--vscode-widget-border);
-                        border-radius: 6px;
-                        background: rgba(255, 255, 255, 0.02);
-                    }
-                    .generic-label {
-                        display: inline-block;
-                        font-family: var(--vscode-editor-font-family);
-                        font-size: 0.8em;
-                        color: var(--vscode-descriptionForeground);
-                        margin-bottom: 8px;
-                    }
-                </style>
-            </head>
-            <body>
-                ${body}
-            </body>
-            </html>`;
+    private _updatePreview(): void {
+        const doc = vscode.workspace.textDocuments.find(d => d.uri.toString() === this._documentUri);
+        if (!doc) { return; }
+
+        const sdoxText = doc.getText();
+        const ast = parseSdox(sdoxText);
+        const html = renderDocument(ast);
+        this._panel.webview.html = this._getFullHtml(html);
     }
 
-    public dispose() {
-        PreviewPanel.currentPanel = undefined;
-
-        this._panel.dispose();
-
-        while (this._disposables.length) {
-            const x = this._disposables.pop();
-            if (x) {
-                x.dispose();
+    private _getFullHtml(bodyHtml: string): string {
+        const stylesPath = path.join(this._extensionUri.fsPath, 'src', 'preview', 'previewStyles.css');
+        let css = '';
+        try {
+            css = fs.readFileSync(stylesPath, 'utf-8');
+        } catch {
+            try {
+                css = fs.readFileSync(path.join(this._extensionUri.fsPath, 'out', 'preview', 'previewStyles.css'), 'utf-8');
+            } catch {
+                css = '/* styles not found */';
             }
         }
+
+        const nonce = this._getNonce();
+
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; img-src ${this._panel.webview.cspSource} https: data:; font-src https:;">
+    <title>SDOX Preview</title>
+    <style nonce="${nonce}">${css}</style>
+</head>
+<body>
+    <div class="sdox-preview-container">${bodyHtml}</div>
+</body>
+</html>`;
+    }
+
+    private _getNonce(): string {
+        let text = '';
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < 32; i++) { text += chars.charAt(Math.floor(Math.random() * chars.length)); }
+        return text;
+    }
+
+    public dispose(): void {
+        PreviewPanel.panels.delete(this._documentUri);
+        this._panel.dispose();
+        if (this._debounceTimer) { clearTimeout(this._debounceTimer); }
+        while (this._disposables.length) { const d = this._disposables.pop(); if (d) { d.dispose(); } }
     }
 }

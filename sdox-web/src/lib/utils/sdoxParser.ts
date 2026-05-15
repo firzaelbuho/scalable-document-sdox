@@ -9,7 +9,7 @@ export interface ASTNode {
  * Tags whose block body content should be captured as raw text
  * (no recursive tag parsing inside).
  */
-const RAW_CONTENT_TAGS = new Set(['code', 'output', 'example']);
+const RAW_CONTENT_TAGS = new Set(['code', 'output', 'example', 'math', 'diagram', 'html', 'markdown']);
 
 /**
  * Tags that act as block containers — their block body
@@ -32,7 +32,11 @@ const CONTAINER_TAGS = new Set([
 	'note',
 	'quote',
 	'instruction',
-	'response'
+	'response',
+	'grid',
+	'chart',
+	'timeline',
+	'changelog'
 ]);
 
 export function parseSdox(input: string): ASTNode {

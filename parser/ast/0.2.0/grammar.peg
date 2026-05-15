@@ -1,0 +1,103 @@
+// ============================================
+// SDOX PEG Grammar — v0.2.0 (Draft)
+// ============================================
+
+Document        <- Spacing (Element / BlankLine)* EOF
+
+Element         <- Tag / PlainText
+
+BlankLine       <- Spacing Newline
+
+
+// ────────────────────────────────────────────
+// 2. TAG SYNTAX
+// ────────────────────────────────────────────
+
+Tag             <- "#" TagName Attributes? Spacing (BlockBody / InlineBody)?
+
+TagName         <- [a-z] [a-z0-9_]*
+
+// Block form: #tag(attrs) { ... }
+BlockBody       <- "{" BlockContent "}"
+
+BlockContent    <- (Element / RawText / BlankLine)*
+
+// Inline form: #tag(attrs) content\n
+InlineBody      <- InlineContent Newline
+
+InlineContent   <- (!Newline .)+
+
+
+// ────────────────────────────────────────────
+// 3. ATTRIBUTES
+// ────────────────────────────────────────────
+
+Attributes      <- "(" Spacing AttributeList Spacing ")"
+
+AttributeList   <- Attribute (Spacing "," Spacing Attribute)*
+
+Attribute       <- AttributeName Spacing "=" Spacing AttributeValue
+
+AttributeName   <- [a-z] [a-z0-9_]*
+
+AttributeValue  <- StringValue / NumberValue / BooleanValue
+
+StringValue     <- '"' StringChar* '"'
+
+StringChar      <- EscapedChar / (!'"' !"\\" .)
+
+EscapedChar     <- "\\" ["\\/bfnrt]
+
+NumberValue     <- "-"? [0-9]+ ("." [0-9]+)?
+
+BooleanValue    <- "true" / "false"
+
+
+// ────────────────────────────────────────────
+// 4. CONTENT RULES
+// ────────────────────────────────────────────
+
+RawText         <- (!("#" [a-z]) !"}" !Newline .)+ Newline?
+
+PlainText       <- (!("#" [a-z]) !Newline .)+ Newline
+
+
+// ────────────────────────────────────────────
+// 5. SPECIAL BLOCKS (RAW CONTENT MODE)
+// ────────────────────────────────────────────
+
+// The following tags use raw content mode (no nested tag parsing):
+// - code
+// - output
+// - math
+// - diagram
+// - example (when language attribute is present)
+
+CodeBlockBody   <- "{" RawBlockContent "}"
+
+RawBlockContent <- (EscapedBrace / NestedBrace / RawChar)*
+
+EscapedBrace    <- "\\" [{}]
+
+NestedBrace     <- "{" RawBlockContent "}"
+
+RawChar         <- !"}" .
+
+
+// ────────────────────────────────────────────
+// 6. WHITESPACE & TERMINALS
+// ────────────────────────────────────────────
+
+Spacing         <- [ \t]*
+
+Newline         <- "\r\n" / "\n" / "\r"
+
+EOF             <- !.
+
+
+// ============================================
+// PARSING PRINCIPLES v0.2.0
+// ============================================
+// 1. Raw content tags (math, diagram, code, output) preserve original text.
+// 2. Nested tags are supported in standard block bodies.
+// 3. Attributes are strictly lowercase snake_case.

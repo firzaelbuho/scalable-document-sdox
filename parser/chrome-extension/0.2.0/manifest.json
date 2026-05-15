@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "SDOX Viewer v0.2.0",
+  "version": "0.2.0",
+  "description": "Renders Scalable Document (.sdox) files directly in Chrome.",
+  "content_scripts": [
+    {
+      "matches": ["*://*/*.sdox", "file://*/*.sdox"],
+      "js": ["lib/katex.min.js", "lib/mermaid.min.js", "lib/marked.min.js", "sdoxParser.js", "sdoxRenderer.js", "content.js"],
+      "css": ["lib/katex.min.css", "styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon.svg",
+    "48": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  }
+}

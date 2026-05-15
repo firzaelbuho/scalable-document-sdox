@@ -1,66 +1,177 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "SDOX",
+  "scopeName": "source.sdox",
   "patterns": [
-    {
-      "include": "#tags"
-    },
-    {
-      "include": "#blocks"
-    }
+    { "include": "#comment" },
+    { "include": "#tag-line" },
+    { "include": "#block-braces" }
   ],
   "repository": {
-    "tags": {
+    "comment": {
       "patterns": [
         {
-          "match": "(#[a-zA-Z0-9_]+)",
-          "name": "keyword.control.sdox"
-        },
-        {
-          "begin": "\\(",
-          "end": "\\)",
-          "patterns": [
-            {
-              "include": "#attributes"
-            }
-          ]
+          "name": "comment.line.double-slash.sdox",
+          "match": "//.*$"
         }
       ]
     },
-    "attributes": {
+    "tag-line": {
       "patterns": [
         {
-          "match": "([a-zA-Z0-9_]+)\\s*=",
+          "comment": "Structure tags: #title, #paragraph, #section, #divider",
+          "match": "(#)(title|paragraph|section|divider)\\b",
           "captures": {
-            "1": { "name": "entity.other.attribute-name.sdox" }
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.structure.sdox" }
           }
         },
         {
-          "match": "\"(.*?)\"",
-          "name": "string.quoted.double.sdox"
+          "comment": "Text & semantic tags: #text, #quote, #note",
+          "match": "(#)(text|quote|note)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.semantic.sdox" }
+          }
         },
         {
-          "match": "\\b(true|false)\\b",
-          "name": "constant.language.boolean.sdox"
+          "comment": "List tags: #list, #item",
+          "match": "(#)(list|item)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.list.sdox" }
+          }
         },
         {
-          "match": "\\b\\d+(\\.\\d+)?\\b",
-          "name": "constant.numeric.sdox"
+          "comment": "Link & media tags: #url, #image",
+          "match": "(#)(url|image)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.media.sdox" }
+          }
+        },
+        {
+          "comment": "Code tags: #code, #output",
+          "match": "(#)(code|output)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.code.sdox" }
+          }
+        },
+        {
+          "comment": "Table tags: #table, #row, #cell",
+          "match": "(#)(table|row|cell)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.table.sdox" }
+          }
+        },
+        {
+          "comment": "Component tags: #card, #tab, #accordion",
+          "match": "(#)(card|tab|accordion)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.component.sdox" }
+          }
+        },
+        {
+          "comment": "Modularization tags: #include, #template, #use",
+          "match": "(#)(include|template|use)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.module.sdox" }
+          }
+        },
+        {
+          "comment": "AI-native tags: #metadata, #dataset, #example, #instruction, #response, #embedding, #chunk, #context, #completion",
+          "match": "(#)(metadata|dataset|example|instruction|response|embedding|chunk|context|completion)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.ai.sdox" }
+          }
+        },
+        {
+          "comment": "Unknown/custom tags",
+          "match": "(#)([a-z][a-z0-9_]*)\\b",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.sdox" },
+            "2": { "name": "keyword.control.other.sdox" }
+          }
+        },
+        {
+          "include": "#attribute-group"
         }
       ]
     },
-    "blocks": {
+    "attribute-group": {
+      "begin": "\\(",
+      "end": "\\)",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.parameters.begin.sdox" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.parameters.end.sdox" }
+      },
       "patterns": [
+        { "include": "#attribute-name" },
+        { "include": "#string-value" },
+        { "include": "#boolean-value" },
+        { "include": "#numeric-value" },
         {
-          "begin": "\\{",
-          "end": "\\}",
-          "patterns": [
-            { "include": "#tags" },
-            { "include": "#blocks" }
-          ]
+          "match": "=",
+          "name": "keyword.operator.assignment.sdox"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.sdox"
         }
       ]
+    },
+    "attribute-name": {
+      "match": "([a-z][a-z0-9_]*)\\s*(?==)",
+      "captures": {
+        "1": { "name": "entity.other.attribute-name.sdox" }
+      }
+    },
+    "string-value": {
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.sdox" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.sdox" }
+      },
+      "name": "string.quoted.double.sdox",
+      "patterns": [
+        {
+          "match": "\\\\[\"\\\\bfnrt/]",
+          "name": "constant.character.escape.sdox"
+        }
+      ]
+    },
+    "boolean-value": {
+      "match": "\\b(true|false)\\b",
+      "name": "constant.language.boolean.sdox"
+    },
+    "numeric-value": {
+      "match": "-?\\b\\d+(\\.\\d+)?\\b",
+      "name": "constant.numeric.sdox"
+    },
+    "block-braces": {
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.block.begin.sdox" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.section.block.end.sdox" }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#tag-line" },
+        { "include": "#block-braces" }
+      ]
     }
-  },
-  "scopeName": "source.sdox"
+  }
 }

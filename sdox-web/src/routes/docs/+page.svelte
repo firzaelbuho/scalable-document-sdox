@@ -173,7 +173,7 @@
 			<div class="ai-dataset-box glass-card">
 				<div class="dataset-header">
 					<div>
-						<h4>SDOX v0.1.0 Prompt Context</h4>
+						<h4>SDOX v0.2.0 Prompt Context</h4>
 						<p>Copy this prompt or provide the raw markdown file as context to any LLM (ChatGPT, Claude, etc.) so it can perfectly generate SDOX syntax instead of Markdown.</p>
 					</div>
 					<div class="action-buttons">
@@ -192,7 +192,7 @@
 							</svg>
 							Copy Prompt
 						</button>
-						<a href="/sdox-llm-dataset.md" download="sdox-llm-dataset-v0.1.0.md" rel="external" class="btn btn-primary">
+						<a href="/sdox-llm-dataset.md" download="sdox-llm-dataset-v0.2.0.md" rel="external" class="btn btn-primary">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 								<polyline points="7 10 12 15 17 10"></polyline>
@@ -206,7 +206,7 @@
 					<div class="preview-header">
 						<span>Preview: sdox-llm-dataset.md</span>
 					</div>
-					<pre><code># SDOX (Scalable Document) v0.1.0 - LLM Knowledge Dataset
+					<pre><code># SDOX (Scalable Document) v0.2.0 - LLM Knowledge Dataset
 
 You are an AI assistant generating SDOX (Scalable Document) format. 
 SDOX is a deterministic, semantic document language that replaces Markdown. Everything in SDOX is a tag. 
